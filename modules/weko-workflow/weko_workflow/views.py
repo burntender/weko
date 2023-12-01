@@ -59,6 +59,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from weko_redis import RedisConnection
 from weko_accounts.api import ShibUser
 from weko_accounts.utils import login_required_customize
+from weko_admin.models import AdminSettings
 from weko_authors.models import Authors
 from weko_deposit.api import WekoDeposit, WekoRecord
 from weko_deposit.links import base_factory
@@ -66,7 +67,7 @@ from weko_deposit.pidstore import get_record_identifier, \
     get_record_without_version
 from weko_deposit.signals import item_created
 from weko_items_ui.api import item_login
-from weko_records.api import FeedbackMailList, ItemLink
+from weko_records.api import FeedbackMailList, RequestMailList, ItemLink
 from weko_records.models import ItemMetadata
 from weko_records.serializers.utils import get_item_type_name
 from weko_records_ui.models import FilePermission
@@ -1445,13 +1446,22 @@ def next_action(activity_id='0', action_id=0):
                 flow_id=activity_detail.flow_define.flow_id,
                 action_id=next_action_id,
                 action_order=next_action_order).one_or_none()
+            if current_flow_action.action_roles and current_flow_action.action_roles[0].action_request_mail:
+                #リクエスト機能がAdmin画面で無効化されている場合、メールは送信しない。
+                if AdminSettings.get('display_request_form',None):
+                    next_action_handler = work_activity.get_user_ids_of_request_mails_by_activity_id(activity_id)
+                else:
+                    next_action_handler = []
             if current_flow_action and current_flow_action.action_roles and \
                     current_flow_action.action_roles[0].action_user:
                 next_action_handler = current_flow_action.action_roles[
                     0].action_user
-        process_send_approval_mails(activity_detail, action_mails_setting,
-                                    next_action_handler,
-                                    url_and_expired_date)
+        # next_action_handlerがlist型ならfor文で複数回メール送信する。
+        if type(next_action_handler) == list:
+            for handler in next_action_handler:
+                process_send_approval_mails(activity_detail, action_mails_setting, handler, url_and_expired_date)
+        else:
+            process_send_approval_mails(activity_detail, action_mails_setting, next_action_handler, url_and_expired_date)
     if current_app.config.get(
         'WEKO_WORKFLOW_ENABLE_AUTO_SEND_EMAIL'):
         process_send_notification_mail(activity_detail, action_endpoint,
