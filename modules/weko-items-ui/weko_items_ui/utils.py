@@ -959,7 +959,7 @@ def make_stats_file(item_type_id, recids, list_item_role):
 
             return self.attr_data['feedback_mail_list']['max_size']
 
-       def get_max_ins_request_mail(self):
+        def get_max_ins_request_mail(self):
             """Get max data each request mail in all exporting records."""
             largest_size = 1
             self.attr_data['request_mail_list'] = {'max_size': 0}

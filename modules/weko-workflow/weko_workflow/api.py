@@ -38,6 +38,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from weko_deposit.api import WekoDeposit
 from weko_records.serializers.utils import get_item_type_name
 from weko_records.models import ItemMetadata as _ItemMetadata
+from weko_records.api import RequestMailList
 
 from .config import IDENTIFIER_GRANT_LIST, IDENTIFIER_GRANT_SUFFIX_METHOD, \
     WEKO_WORKFLOW_ALL_TAB, WEKO_WORKFLOW_TODO_TAB, WEKO_WORKFLOW_WAIT_TAB
@@ -1121,7 +1122,8 @@ class WorkActivity(object):
     def create_or_update_action_request_mail(self,
                                              activity_id,
                                              action_id,
-                                             request_maillist):
+                                             request_maillist,
+                                             is_request_mail_enabled=False):
         """Create or update action ActionRequstMail's model.
         :param activity_id: activity identifier
         :param action_id:   action identifier
@@ -1139,7 +1141,8 @@ class WorkActivity(object):
                     action_request_mail = ActionRequestMail(
                         activity_id=activity_id,
                         action_id=action_id,
-                        request_maillist=request_maillist
+                        request_maillist=request_maillist,
+                        is_request_mail_enabled=is_request_mail_enabled
                     )
                     db.session.add(action_request_mail)
             db.session.commit()
@@ -1204,7 +1207,7 @@ class WorkActivity(object):
                 activity_id=activity_id).one_or_none()
             return action_feedbackmail
 
-    def get_action_request_mail(self, activity_id, action_id):
+    def get_action_request_mail(self, activity_id):
         """Get ActionRequestMail object from model base on activity's id.
         :param activity_id: acitivity identifier
         :param action_id:   action identifier
@@ -1656,6 +1659,10 @@ class WorkActivity(object):
                         _FlowActionRole.action_item_registrant == True,
                         _ItemMetadata.json.op('->>')('owner') == current_user.get_id()
                     ),
+                    and_(
+                        _FlowActionRole.action_request_mail == True,
+                        cast(ActionRequestMail.request_maillist, String).contains('"'+current_user.email+'"')
+                    ),
                 )
             )
 
@@ -1727,6 +1734,9 @@ class WorkActivity(object):
                         and_(
                              _FlowActionRole.action_item_registrant == True,
                         ),
+                        and_(
+                            _FlowActionRole.action_request_mail == True,
+                        )
                     )
                 )\
                 .filter(_FlowAction.action_id == _Activity.action_id) \
@@ -1758,9 +1768,15 @@ class WorkActivity(object):
                             _FlowActionRole.action_item_registrant == True,
                             _ItemMetadata.json.op('->>')('owner') == current_user.get_id() 
                         ),
+                        and_(
+                        _FlowActionRole.action_request_mail == True,
+                        cast(ActionRequestMail.request_maillist, String).contains('"'+current_user.email+'"'),
+                        or_(_FlowActionRole.action_role.in_(self_group_ids),
+                            _FlowActionRole.action_role == None
+                            )
+                        ),
                     )
                 )
-
         return query
 
     @staticmethod
@@ -1787,6 +1803,7 @@ class WorkActivity(object):
                 )
             ).outerjoin(_Action) \
             .outerjoin(_FlowAction).outerjoin(_FlowActionRole) \
+            .outerjoin(ActionRequestMail,and_(ActionRequestMail.activity_id == _Activity.activity_id))\
             .outerjoin(
                 ActivityAction,
                 and_(
@@ -2177,19 +2194,17 @@ class WorkActivity(object):
         :param activity_id: int, Id number of item
         :return: return ids of request mails that set to item
         """
-        activity_detail = self.get_activity_detail(activity_id)
-        #制限公開アイテムに対して利用申請を出している場合、extra_infoがついているのでそれから制限公開アイテムのrecidをとる。
-        restricted_record_id = activity_detail.extra_info.get("record_id") if activity_detail.extra_info else None
-        #extra_infoがあった場合、このactivity_idは利用申請系ワークフローであるので紐づいている制限公開アイテムのIDで別のメソッドを回す。
-        if activity_detail.extra_info and activity_detail.extra_info.get("is_restricted_access", "") and restricted_record_id :
-            return self.get_user_ids_of_request_mails_by_record_id(restricted_record_id)
         #request_mail_listをactivity_idでworkflow_action_request_mailテーブルから引っ張ってくる。
         request_mails = self.get_action_request_mail(activity_id)
         #該当するactivity_idがなかった場合、空リストを返す
         if not request_mails:
             return []
+        #request_maillistが空リストかworkflow_action_request_mailのis_request_mail_enabledがFalseなら空リストを返す
+        if not request_mails.request_maillist or not request_mails.is_request_mail_enabled:
+            return []
+        maillist=request_mails.request_maillist
         user_ids=[]
-        for mail in request_mails:
+        for mail in maillist:
             #リクエスト送信先のメールアドレスでユーザーが登録されているか
             temp_user_info = db.session.query(User).filter_by(email=mail["email"]).first()
             if not temp_user_info:

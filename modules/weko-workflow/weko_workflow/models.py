@@ -1074,6 +1074,13 @@ class ActionRequestMail(db.Model, TimestampMixin):
     )
     """Action id."""
 
+    is_request_mail_enabled = db.Column(
+        db.Boolean(name='is_request_mail_enabled'),
+        nullable=False, 
+        default=False, 
+        server_default='0')
+    """If set to True, enable request mail """
+
     request_maillist = db.Column(
         db.JSON().with_variant(
             postgresql.JSONB(none_as_null=True),
