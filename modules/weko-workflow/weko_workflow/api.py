@@ -1776,6 +1776,7 @@ class WorkActivity(object):
                             )
                         ),
                         and_(
+                            _FlowActionRole.action_request_mail == True,
                             _Activity.extra_info.op("->>")('record_id').in_(recid_list),
                             or_(_FlowActionRole.action_role.in_(self_group_ids),
                                 _FlowActionRole.action_role == None
