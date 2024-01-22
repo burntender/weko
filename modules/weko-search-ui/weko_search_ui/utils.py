@@ -1908,7 +1908,9 @@ def handle_check_and_prepare_item_application(list_record):
         if workflow_id and terms:
             #コンテンツファイル情報の有無をチェック
             file_paths = item.get("file_path", [])
-            exists_filepath = not(len(file_paths)==1 and len(file_paths[0])==0)
+            # リストfile_pathsの空文字列を削除
+            file_paths = [a for a in file_paths if a != '' or a != None]
+            exists_filepath = len(file_paths)!=0
             exists_filename = check_exists_file_name(item)
             has_contents_file= exists_filepath or exists_filename
             if has_contents_file:
