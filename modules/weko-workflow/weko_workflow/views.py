@@ -649,6 +649,25 @@ def init_activity_guest():
 
 @workflow_blueprint.route('/activity/guest-user/<string:file_name>', methods=['GET'])
 def display_guest_activity(file_name=""):
+    """Display content application activity for guest user.
+
+    @param file_name:File name
+    @return:
+    """
+    render_guest_workflow(file_name=file_name)
+
+
+@workflow_blueprint.route('/activity/guest-user/recid/<string:record_id>', methods=['GET'])
+def display_guest_activity_item_application(record_id=""):
+    """Display item application activity for guest user.
+
+    @param record_id:File name
+    @return:
+    """
+    render_guest_workflow(file_name='recid/' + record_id)
+
+
+def render_guest_workflow(file_name=""):
     """Display activity for guest user.
 
     @param file_name:File name
@@ -1433,14 +1452,17 @@ def next_action(activity_id='0', action_id=0):
             # 利用申請のWF時、申請されたファイルと、そのアイテム内の制限公開ファイルすべてにアクセス権を付与する
             permissions :List[FilePermission] = FilePermission.find_by_activity(activity_id)
             guest_activity :GuestActivity = GuestActivity.find_by_activity_id(activity_id)
-            if permissions and len(permissions) == 1:
-                # 利用申請(ログイン済)なら、WF作成時にFilePermissionが1レコードだけ作られている。
-                url_and_expired_date = grant_access_rights_to_all_open_restricted_files(activity_id,permissions[0] ,activity_detail)
-            elif guest_activity and len(guest_activity) == 1:
-                # 利用申請(ゲスト)なら、WF作成時にFilePermissionが作られていないが、GuestActivityが作られている。
-                url_and_expired_date = grant_access_rights_to_all_open_restricted_files(activity_id,guest_activity[0] ,activity_detail)
+            # validate file name
+            extra_info: dict = deepcopy(activity_detail.extra_info)
+            if extra_info and extra_info.get('file_name') and \
+                not re.fullmatch(r'recid/\d+(?:\.\d+)?', extra_info.get('file_name')):
+                if permissions and len(permissions) == 1:
+                    # 利用申請(ログイン済)なら、WF作成時にFilePermissionが1レコードだけ作られている。
+                    url_and_expired_date = grant_access_rights_to_all_open_restricted_files(activity_id,permissions[0] ,activity_detail)
+                elif guest_activity and len(guest_activity) == 1:
+                    # 利用申請(ゲスト)なら、WF作成時にFilePermissionが作られていないが、GuestActivityが作られている。
+                    url_and_expired_date = grant_access_rights_to_all_open_restricted_files(activity_id,guest_activity[0] ,activity_detail)
 
-            
             if not url_and_expired_date:
                 url_and_expired_date = {}
         action_mails_setting['approval'] = True

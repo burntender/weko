@@ -674,7 +674,6 @@ class RequestMailList(db.Model, Timestamp):
         primary_key=True,
         autoincrement=True
     )
-
     """Request mail list identifier."""
 
     item_id = db.Column(
@@ -709,12 +708,14 @@ class ItemApplication(db.Model, Timestamp):
         primary_key=True,
         autoincrement=True
     )
+    """Item application identifier."""
 
     item_id = db.Column(
         UUIDType,
         nullable=False,
         default=uuid.uuid4,
     )
+    """Related Item UUID."""
 
     item_application = db.Column(
         db.JSON().with_variant(
@@ -730,6 +731,7 @@ class ItemApplication(db.Model, Timestamp):
         default=lambda: dict(),
         nullable=True
     )
+    """Item application info (terms and workflow)."""
 
 class ItemReference(db.Model, Timestamp):
     """Model of item reference relations."""

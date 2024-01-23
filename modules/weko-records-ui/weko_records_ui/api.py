@@ -5,10 +5,13 @@ from email_validator import validate_email
 from flask import current_app
 from flask_mail import Message
 import hashlib
+
+from invenio_db import db
 from invenio_mail.admin import _load_mail_cfg_from_db, _set_flask_mail_cfg
 
 
 from weko_records.api import RequestMailList
+from weko_records.models import ItemApplication
 from weko_records_ui.captcha import get_captcha_info
 from weko_records_ui.errors import ContentsNotFoundError, InternalServerError, InvalidCaptchaError, InvalidEmailError
 from weko_redis.redis import RedisConnection
@@ -46,7 +49,7 @@ def send_request_mail(item_id, mail_info):
     except Exception as ex:
         # Invalid email
         raise InvalidEmailError() # 400 Error
-    
+
     try:
         mail_cfg = _load_mail_cfg_from_db()
         _set_flask_mail_cfg(mail_cfg)
@@ -99,6 +102,24 @@ def create_captcha_image():
     res_json = {
         "key": key,
         'image': captcha_info['image'],
-        'ttl': ttl 
+        'ttl': ttl
     }
     return True, res_json
+
+
+def get_item_provide_list(item_id):
+    if not item_id:
+        return {}
+
+    item_application_info = None
+    try:
+        with db.session.no_autoflush:
+            item_application_info = db.session.query(ItemApplication) \
+                .filter_by(item_id=item_id).first()
+    except Exception:
+        current_app.logger.exception('Item provide list query failed.')
+
+    if item_application_info:
+        return item_application_info.item_application
+    else:
+        return {}
