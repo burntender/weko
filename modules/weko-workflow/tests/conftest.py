@@ -2351,7 +2351,7 @@ def db_register_usage_application(app, db, db_records, users, action_data, item_
                     , activity_confirm_term_of_use=True
                     , title='test'
                     , shared_user_ids=[]
-                    , extra_info={}
+                    , extra_info={"file_name": "aaa.txt", "record_id": "1", "user_mail": "aaa@test.org", "related_title": "test", "is_restricted_access": True}
                     , action_order=3)
     activity2_pre_action = ActivityAction(
         activity_id='A-00000001-20002'
@@ -2444,21 +2444,62 @@ def db_register_usage_application(app, db, db_records, users, action_data, item_
         ,expiration_date=datetime.now()
         ,is_usage_report=False
     )
+    # 利用申請(next ->end)
+    activity5 = Activity(activity_id='A-00000001-20005'
+                        ,workflow_id=workflows["workflow_workflow3"].id
+                        ,flow_id=workflows["flow_define3"].id
+                        ,action_id=4
+                        ,item_id=db_records[2][2].id
+                    , activity_login_user=1
+                    , action_status = 'M'
+                    , activity_update_user=1
+                    , activity_start=datetime.strptime('2022/04/14 3:01:53.931', '%Y/%m/%d %H:%M:%S.%f')
+                    , activity_community_id=3
+                    , activity_confirm_term_of_use=True
+                    , title='test'
+                    , shared_user_ids=[]
+                    , extra_info={"file_name": "recid/15.0", "record_id": "1", "user_mail": "aaa@test.org", "related_title": "test", "is_restricted_access": True}
+                    , action_order=3)
+    activity5_pre_action = ActivityAction(
+        activity_id='A-00000001-20005'
+        ,action_id=4
+        ,action_status = 'M'
+        ,action_order=3
+        ,action_handler=1
+    )
+    activity5_next_action = ActivityAction(
+        activity_id='A-00000001-20005'
+        ,action_id=2
+        ,action_status = 'M'
+        ,action_order=4
+        ,action_handler=-1
+    )
+    file_permission = FilePermission(
+        user_id = 1
+        ,record_id= 1
+        ,file_name= "aaa.txt"
+        ,usage_application_activity_id='A-00000001-20005'
+        ,usage_report_activity_id=None
+        ,status = -1
+    )
     with db.session.begin_nested():
         db.session.add(activity1)
         db.session.add(activity2)
         db.session.add(activity3)
         db.session.add(activity4)
+        db.session.add(activity5)
     db.session.commit()
     with db.session.begin_nested():
         db.session.add(activity1_next_action)
         db.session.add(activity2_next_action)
         db.session.add(activity3_next_action)
         db.session.add(activity4_next_action)
+        db.session.add(activity5_next_action)
         db.session.add(activity1_pre_action)
         db.session.add(activity2_pre_action)
         db.session.add(activity3_pre_action)
         db.session.add(activity4_pre_action)
+        db.session.add(activity5_pre_action)
         db.session.add(file_permission)
         db.session.add(guest_activity)
     db.session.commit()
@@ -2467,6 +2508,7 @@ def db_register_usage_application(app, db, db_records, users, action_data, item_
         ,"activity2":activity2
         ,"activity3":activity3
         ,"activity4":activity4
+        ,"activity5":activity5
     })
 
     permissions = list()

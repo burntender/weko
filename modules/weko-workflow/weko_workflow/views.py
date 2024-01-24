@@ -2442,7 +2442,7 @@ def save_item_application(activity_id='0', action_id='0'):
             item_application = {
                 "workflow" : workflow_for_item_application,
                 "terms" : terms_without_contents,
-                "terms_description" : terms_description_without_contents
+                "termsDescription" : terms_description_without_contents
             }
         else:
             item_application = {

@@ -647,10 +647,13 @@ def test_prepare_edit_workflow(app, workflow, db_records,users,mocker, order_if)
         recid = db_records[0][0]
         deposit = db_records[0][6]
         mocker.patch("weko_workflow.utils.FeedbackMailList.get_mail_list_by_item_id", return_value = [{"email":"exam@exam.com","author_id":""}])
-        mocker.patch("weko_workflow.utils.RequestMailList.get_mail_list_by_item_id", return_value = [{"email":"exam@exam.com","author_id":""}])
-        
+        request_mail_mock = mocker.patch("weko_workflow.utils.RequestMailList.get_mail_list_by_item_id", return_value = [{"email":"exam@exam.com","author_id":""}])
+        item_application_mock = mocker.patch("weko_workflow.utils.ItemApplication.get_item_application_by_item_id", return_value = {"workflow":1, "terms":"term_free", "termsDescription":"test"})
+
         if order_if == 0:
             result = prepare_edit_workflow(data,recid,deposit)
+            request_mail_mock.assert_called()
+            item_application_mock.assert_called()
         if order_if == 1:
             with patch("weko_workflow.utils.IdentifierHandle.get_pidstore", return_value = None):
                 result = prepare_edit_workflow(data,recid,deposit)
