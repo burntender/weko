@@ -1019,15 +1019,38 @@ def test_handle_check_and_prepare_item_application(i18n_app, record_with_metadat
         handle_check_and_prepare_item_application([record])
         assert record["metadata"]["item_application"] == {"workflow":"1", "terms":"term_free", "termsDescription":"利用規約自由入力"}
     
+    # 正常系 item_applicationのworkflowが存在しない
+    workflow = WorkFlow(id=1)
+    with patch("weko_search_ui.utils.WorkFlowApi.get_workflow_list", return_value=[workflow]):
+        record = {"metadata":{}, "item_application":{"terms":"term_free", "terms_description":"利用規約自由入力"}}
+        handle_check_and_prepare_item_application([record])
+        assert not record["metadata"].get("item_application", "")
+
+    # 正常系 item_applicationのtermsが存在しない。
+    workflow = WorkFlow(id=1)
+    with patch("weko_search_ui.utils.WorkFlowApi.get_workflow_list", return_value=[workflow]):
+        record = {"metadata":{}, "item_application":{"workflow":"1", "terms_description":"利用規約自由入力"}}
+        handle_check_and_prepare_item_application([record])
+        assert not record["metadata"].get("item_application", "")
+    
     # 異常系 ファイル情報を持っている。
     record = {"metadata":{}, "file_path":"/recid15/test.txt", "item_application":{"workflow":"1", "terms":"term_free", "terms_description":"利用規約自由入力"}}
     handle_check_and_prepare_item_application([record])
     assert record["errors"][0] == "If there is a info of content file, terms of use cannot be set."
 
-    # 異常系 workflowが存在しないworkflowである。
-    record = {"metadata":{}, "item_application":{"workflow":"not_exist", "terms":"term_free", "terms_description":"利用規約自由入力"}}
-    handle_check_and_prepare_item_application([record])
-    assert record["errors"][0] == "指定する提供方法はシステムに存在しません。"
+    # 異常系 workflowが文字列である。
+    workflow = WorkFlow(id=1)
+    with patch("weko_search_ui.utils.WorkFlowApi.get_workflow_list", return_value=[workflow]):
+        record = {"metadata":{}, "item_application":{"workflow":"not_exist", "terms":"term_free", "terms_description":"利用規約自由入力"}}
+        handle_check_and_prepare_item_application([record])
+        assert record["errors"][0] == "指定する提供方法はシステムに存在しません。"
+
+    # 異常系 workflowがシステムに存在しないworkflowである。
+    workflow = WorkFlow(id=1)
+    with patch("weko_search_ui.utils.WorkFlowApi.get_workflow_list", return_value=[workflow]):
+        record = {"metadata":{}, "item_application":{"workflow":"999999999999", "terms":"term_free", "terms_description":"利用規約自由入力"}}
+        handle_check_and_prepare_item_application([record])
+        assert record["errors"][0] == "指定する提供方法はシステムに存在しません。"
 
     # 異常系 termsが存在しないtermsである。
     with patch("weko_search_ui.utils.WorkFlowApi.get_workflow_list", return_value=[workflow]):
@@ -1044,7 +1067,7 @@ def test_check_exists_file_name(i18n_app, record_with_metadata):
     assert check_exists_file_name(item)
 
     # *.filenameに値が存在しない。
-    item = {"metadata":{}}
+    item = {"metadata":{"filename_test":[{"filename":""}]}}
     assert not check_exists_file_name(item)
 
 # def check_terms_in_system_for_item_application(terms):
@@ -1063,6 +1086,11 @@ def test_check_terms_in_system_for_item_application():
         
         # termsが存在しないkey
         assert not check_terms_in_system_for_item_application("not_exists")
+
+    # get_restricted_accessがNoneを返す場合
+    with patch("weko_search_ui.utils.get_restricted_access", return_value=None):
+        assert not check_terms_in_system_for_item_application("1234567890")
+    
     
 
 # def handle_set_change_identifier_flag(list_record, is_change_identifier):

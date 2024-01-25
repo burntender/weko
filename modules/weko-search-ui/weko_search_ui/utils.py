@@ -1944,8 +1944,8 @@ def check_exists_file_name(item):
     metadata = item["metadata"]
     for key, val in metadata.items():
         if isinstance(val, list):
-            for item in val:
-                if isinstance(item, dict) and "filename" in item:
+            for sub_item in val:
+                if isinstance(sub_item, dict) and "filename" in sub_item:
                     file_meta_ids.append(key)
                     break
 
@@ -1958,7 +1958,6 @@ def check_exists_file_name(item):
     return False
                     
 def check_terms_in_system_for_item_application(terms):
-    system_terms_list = get_restricted_access('terms_and_conditions')
     # DBに利用規約を登録していない場合
     # 未設定
     if not terms:
@@ -1967,6 +1966,9 @@ def check_terms_in_system_for_item_application(terms):
     if 'term_free' == terms:
         return True
     # DBに利用規約を登録済みの場合
+    system_terms_list = get_restricted_access('terms_and_conditions')
+    if not system_terms_list:
+        return False
     for system_terms in system_terms_list:
         if str(system_terms.get('key')) == str(terms):
             return True
