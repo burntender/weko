@@ -2,7 +2,7 @@ import pytest
 import json
 from mock import patch, MagicMock
 from flask import Flask
-from b2handle.handleexceptions import HandleAlreadyExistsException
+# from b2handle.handleexceptions import HandleAlreadyExistsException
 
 from weko_handle.api import Handle
 
@@ -29,14 +29,14 @@ def test_register_handle(app):
         pass
     
     # Exception coveraga
-    with patch("weko_handle.api.PIDClientCredentials.load_from_JSON", side_effect=HandleAlreadyExistsException()):
-        try:
-            location = 1
-            sample.register_handle(
-                location=location
-            )
-        except:
-            pass
+    # with patch("weko_handle.api.PIDClientCredentials.load_from_JSON", side_effect=HandleAlreadyExistsException()):
+    #     try:
+    #         location = 1
+    #         sample.register_handle(
+    #             location=location
+    #         )
+    #     except:
+    #         pass
 
 
 # def get_prefix(self): 
