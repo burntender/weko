@@ -437,7 +437,7 @@ class UserIdentity(db.Model, Timestamp):
     method = db.Column(db.String(255), primary_key=True, nullable=False)
     id_user = db.Column(db.Integer(), db.ForeignKey(User.id), nullable=False)
 
-    user = db.relationship(User, backref="external_identifiers")
+    user = db.relationship(User, backref="user_identifiers")
 
     __table_args__ = (
         db.Index("accounts_useridentity_id_user_method", id_user, method, unique=True),

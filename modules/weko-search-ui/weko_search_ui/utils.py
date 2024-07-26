@@ -31,7 +31,8 @@ import tempfile
 import traceback
 import uuid
 import zipfile
-from collections import Callable, OrderedDict
+from collections import OrderedDict
+from collections.abc import Callable
 from datetime import datetime
 from functools import partial, reduce, wraps
 import io
@@ -44,7 +45,7 @@ import bagit
 import redis
 from redis import sentinel
 from celery.result import AsyncResult
-from celery.task.control import revoke
+from celery.app.control import Control
 from elasticsearch import ElasticsearchException
 from elasticsearch.exceptions import NotFoundError
 from flask import abort, current_app, has_request_context, request, Flask, send_file
@@ -3633,7 +3634,7 @@ def cancel_export_all():
         export_status, _, _, _, _ = get_export_status()
 
         if export_status:
-            revoke(task_id, terminate=True)
+            Control().revoke(task_id, terminate=True)
             delete_task_id_cache.apply_async(
                 args=(
                     task_id,

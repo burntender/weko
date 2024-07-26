@@ -10,7 +10,7 @@ from elasticsearch_dsl import response, Search
 from elasticsearch.exceptions import ElasticsearchException
 from tests.conftest import json_data
 
-from invenio_records_rest.errors import MaxResultWindowRESTError
+from invenio_records_rest.errors import SearchPaginationRESTError
 from invenio_rest import ContentNegotiatedMethodView
 
 from weko_records.api import ItemTypes

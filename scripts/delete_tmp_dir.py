@@ -7,7 +7,7 @@ import ast
 import glob, re
 import redis
 from celery import Celery
-from celery.task.control import inspect
+from celery.app.control import Inspect
 
 glob._ishidden = lambda x: False
 
@@ -32,7 +32,7 @@ def get_tasks():
     celery.conf.broker_url = CELERY_BROKER_URL
     celery.conf.result_backend = CELERY_RESULT_BACKEND
 
-    inspector = inspect()
+    inspector = Inspect()
 
     active_tasks = inspector.active()
     reserved_tasks = inspector.reserved()
