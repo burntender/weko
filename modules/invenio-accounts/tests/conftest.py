@@ -214,11 +214,11 @@ def api(request):
     """Flask application fixture."""
     api_app = _app_factory(
         dict(
-            #SQLALCHEMY_DATABASE_URI=os.environ.get(
-            #    "SQLALCHEMY_DATABASE_URI", "sqlite:///test.db"
-            #),
-            SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
-                                          'postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest'),
+            SQLALCHEMY_DATABASE_URI=os.environ.get(
+               "SQLALCHEMY_DATABASE_URI", "sqlite:///test.db"
+            ),
+            # SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
+            #                               'postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest'),
             SERVER_NAME="localhost",
             TESTING=True,
         )

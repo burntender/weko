@@ -78,18 +78,19 @@ def test_registration_blocked(app):
         Domain.create("inveniosoftware.org", status=DomainStatus.blocked)
         db.session.commit()
 
-    with app.test_client() as client:
-        test_email = "info@inveniosoftware.org"
-        test_password = "test1234"
-        resp = client.post(
-            url_for_security("register"),
-            data=dict(
-                email=test_email,
-                password=test_password,
-            ),
-            environ_base={"REMOTE_ADDR": "127.0.0.1"},
-        )
-        assert "The email domain is blocked." in resp.text
+        with app.test_client() as client:
+            test_email = "info@inveniosoftware.org"
+            test_password = "test1234"
+            resp = client.post(
+                url_for_security("register"),
+                data=dict(
+                    email=test_email,
+                    password=test_password,
+                ),
+                environ_base={"REMOTE_ADDR": "127.0.0.1"},
+            )
+            
+            assert "The email domain is blocked." in resp.get_data().decode('utf-8')
 
 
 def test_view_list_sessions(app):
@@ -100,80 +101,82 @@ def test_view_list_sessions(app):
         user2 = create_test_user(email="user2@invenio-software.org")
         user2_id = user2.id
 
-    with app.test_client() as client:
-        client.post(
-            url_for_security("login"),
-            data=dict(
-                email=user1.email,
-                password=user1.password_plaintext,
-            ),
-        )
+        with app.test_client() as client:
+            client.post(
+                url_for_security("login"),
+                data=dict(
+                    email=user1.email,
+                    password=user1.password_plaintext,
+                ),
+            )
 
-    with app.test_client() as client:
-        client.post(
-            url_for_security("login"),
-            data=dict(
-                email=user2.email,
-                password=user2.password_plaintext,
-            ),
-        )
+        with app.test_client() as client:
+            client.post(
+                url_for_security("login"),
+                data=dict(
+                    email=user2.email,
+                    password=user2.password_plaintext,
+                ),
+            )
 
-        # get the list of user 2 sessions
-        url = url_for("invenio_accounts.security")
-        res = client.get(url)
-        assert res.status_code == 200
+            # get the list of user 2 sessions
+            url = url_for("invenio_accounts.security")
+            res = client.get(url)
+            assert res.status_code == 200
 
-        # check session for user 1 is not in the list
-        sessions_1 = SessionActivity.query.filter_by(user_id=user1_id).all()
-        user1_sid = sessions_1[0].sid_s
-        assert len(sessions_1) == 1
-        assert sessions_1[0].sid_s not in res.data.decode("utf-8")
+            # check session for user 1 is not in the list
+            sessions_1 = SessionActivity.query.filter_by(user_id=user1_id).all()
+            user1_sid = sessions_1[0].sid_s
+            assert len(sessions_1) == 1
+            assert sessions_1[0].sid_s not in res.data.decode("utf-8")
 
-        # check session for user 2 is in the list
-        sessions_2 = SessionActivity.query.filter_by(user_id=user2_id).all()
-        user2_sid = sessions_2[0].sid_s
-        assert len(sessions_2) == 1
-        assert sessions_2[0].sid_s in res.data.decode("utf-8")
+            # check session for user 2 is in the list
+            sessions_2 = SessionActivity.query.filter_by(user_id=user2_id).all()
+            user2_sid = sessions_2[0].sid_s
+            assert len(sessions_2) == 1
+            assert sessions_2[0].sid_s in res.data.decode("utf-8")
 
-        # test user 2 to delete user 1 session
-        url = url_for("invenio_accounts.revoke_session")
-        res = client.post(url, data={"sid_s": user1_sid})
-        assert res.status_code == 302
-        assert (
-            SessionActivity.query.filter_by(
-                user_id=user1_id, sid_s=user1_sid
-            ).count()
-            == 1
-        )
+            # test user 2 to delete user 1 session
+            url = url_for("invenio_accounts.revoke_session")
+            res = client.post(url, data={"sid_s": user1_sid})
+            assert res.status_code == 302
+            assert (
+                SessionActivity.query.filter_by(
+                    user_id=user1_id, sid_s=user1_sid
+                ).count()
+                == 1
+            )
 
-        # test user 2 to delete user 1 session
-        url = url_for("invenio_accounts.revoke_session")
-        res = client.post(url, data={"sid_s": user2_sid})
-        assert res.status_code == 302
-        assert (
-            SessionActivity.query.filter_by(
-                user_id=user1_id, sid_s=user2_sid
-            ).count()
-            == 0
-        )
+            # test user 2 to delete user 1 session
+            url = url_for("invenio_accounts.revoke_session")
+            res = client.post(url, data={"sid_s": user2_sid})
+            assert res.status_code == 302
+            assert (
+                SessionActivity.query.filter_by(
+                    user_id=user1_id, sid_s=user2_sid
+                ).count()
+                == 0
+            )
 
 
 def test_login_remember_me_disabled(app, users):
     """Test login remember me is disabled."""
     email = users[0]["email"]
     password = users[0]["password"]
-    _security.login_form = LoginForm
-    with app.test_client() as client:
-        res = client.post(
-            url_for_security("login"),
-            data={"email": email, "password": password, "remember": True},
-            environ_base={"REMOTE_ADDR": "127.0.0.1"},
-        )
-        # check the remember_me cookie is not there
-        name = "{0}=".format(COOKIE_NAME)
-        assert all([name not in val for val in res.headers.values()])
-        # check the session cookie is still there
-        assert any(["session=" in val for val in res.headers.values()])
+    
+    with app.app_context():
+        _security.login_form = LoginForm
+        with app.test_client() as client:
+            res = client.post(
+                url_for_security("login"),
+                data={"email": email, "password": password, "remember": True},
+                environ_base={"REMOTE_ADDR": "127.0.0.1"},
+            )
+            # check the remember_me cookie is not there
+            name = "{0}=".format(COOKIE_NAME)
+            assert all([name not in val for val in res.headers.values()])
+            # check the session cookie is still there
+            assert any(["session=" in val for val in res.headers.values()])
 
 
 def test_login_from_headers_disabled(app, users):
@@ -182,15 +185,16 @@ def test_login_from_headers_disabled(app, users):
     basic_fmt = "Basic {0}"
     decoded = bytes.decode(base64.b64encode(str.encode(str(email))))
     headers = [("Authorization", basic_fmt.format(decoded))]
-    with app.test_client() as client:
-        res = client.get(
-            url_for("invenio_accounts.security"),
-            headers=headers,
-            environ_base={"REMOTE_ADDR": "127.0.0.1"},
-        )
-        # check redirect to login
-        assert res.status_code == 302
-        assert '<a href="/login/' in res.data.decode("utf-8")
+    with app.app_context():
+        with app.test_client() as client:
+            res = client.get(
+                url_for("invenio_accounts.security"),
+                headers=headers,
+                environ_base={"REMOTE_ADDR": "127.0.0.1"},
+            )
+            # check redirect to login
+            assert res.status_code == 302
+            assert '<a href="/login/' in res.data.decode("utf-8")
 
 
 def test_disabled_login(app, users):
@@ -198,12 +202,12 @@ def test_disabled_login(app, users):
     app.config["ACCOUNTS_LOCAL_LOGIN_ENABLED"] = False
     email = users[0]["email"]
     password = users[0]["password"]
-    _security.login_form = LoginForm
+    with app.app_context():
+        _security.login_form = LoginForm
+        with app.test_client() as client:
+            url = url_for_security("login")
+            data = {"email": email, "password": password, "remember": True}
 
-    with app.test_client() as client:
-        url = url_for_security("login")
-        data = {"email": email, "password": password, "remember": True}
+            res = client.post(url, data=data, environ_base={"REMOTE_ADDR": "127.0.0.1"})
 
-        res = client.post(url, data=data, environ_base={"REMOTE_ADDR": "127.0.0.1"})
-
-        assert res.status_code == 404
+            assert res.status_code == 404
