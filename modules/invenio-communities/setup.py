@@ -90,7 +90,7 @@ setup_requires = [
 
 install_requires = [
     'bleach>=2.1.3',
-    'Flask-BabelEx>=0.9.3',
+    # 'Flask-BabelEx>=0.9.3',
     'Flask>=0.11.1',
     # 'elasticsearch-dsl>=6.0.0,<7.0.0',
     # 'elasticsearch>=6.0.0,<7.0.0',
@@ -102,7 +102,7 @@ install_requires = [
     'invenio-records>=1.2.0',
     'invenio-rest[cors]>=1.0.0',
     # 'invenio-search>=1.0.0a9',
-    'marshmallow>=2.15.0,<3',
+    # 'marshmallow>=2.15.0,<3',
 ]
 
 packages = find_packages()

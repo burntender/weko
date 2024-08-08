@@ -1,4 +1,25 @@
 
+-e ../invenio-accounts
+-e ../invenio-communities
+-e ../invenio-db
+-e ../invenio-deposit
+-e ../invenio-files-rest
+-e ../invenio-iiif
+-e ../invenio-indexer
+-e ../invenio-mail
+-e ../invenio-oaiharvester
+-e ../invenio-oaiserver
+-e ../invenio-oauth2server
+-e ../invenio-previewer
+-e ../invenio-queues
+-e ../invenio-records
+-e ../invenio-records-rest
+-e ../invenio-resourcesyncclient
+-e ../invenio-resourcesyncserver
+-e ../invenio-s3
+# -e git+https://github.com/RCOSDP/invenio-search.git@cff9744c5dc651893a9c51672c5b8da9adc21e16#egg=invenio_search
+# -e git+https://github.com/RCOSDP/invenio-search-ui.git@74bd3b2990ff27b39e01b6b31be9a0b5fda3dd0f#egg=invenio_search_ui
+-e ../invenio-stats
 
 setuptools # https://github.com/tikitu/jsmin/issues/33
 importlib_metadata==4.8.3
@@ -48,7 +69,7 @@ Flask-Admin==1.6.1
 Flask-Alembic==2.0.1
 Flask-Assets==0.12
 Flask-Babel==4.0.0
-Flask-BabelEx==0.9.4
+# Flask-BabelEx==0.9.4
 Flask-Breadcrumbs==0.5.1
 Flask-Caching==2.1.0
 flask-celeryext==0.4.0
@@ -65,7 +86,9 @@ Flask-Menu==1.0.1
 -e git+https://github.com/RCOSDP/flask-oauthlib.git@add-redissentinel#egg=Flask-OAuthlib
 Flask-Principal==0.4.0
 Flask-RESTful==0.3.8
-Flask-Security==3.0.0
+# Flask-Security==5.5.1
+# Flask-Security-Too==4.1.6
+# -e git+https://github.com/pallets-eco/flask-security.git@4.1.x#egg=Flask-Security-Too
 Flask-Security-Invenio==3.3.3
 flask-shell-ipython==0.5.1
 # flask-sqlalchemy==2.5.0
@@ -109,8 +132,8 @@ limits==3.11.0
 lxml==5.2.1
 Mako==1.0.7
 MarkupSafe==2.1.5
-#marshmallow==3.21.1
-marshmallow==2.21.0
+marshmallow==3.21.1
+# marshmallow==2.21.0
 maxminddb==1.5.2
 maxminddb-geolite2==2018.703
 mistune==3.0.2
@@ -211,7 +234,7 @@ ftfy==4.4.3
 attrs==23.2.0
 # b2handle==1.1.1
 resync==1.0.9
-email-validator==1.0.5
+email-validator==1.1.1
 iiif-prezi==0.3.0
 netaddr==0.8.0
 # for sentry
@@ -293,24 +316,3 @@ Flask-Collect-Invenio==1.4.0
 -e ../weko-user-profiles
 -e ../weko-workflow
 
--e ../invenio-accounts
--e ../invenio-communities
--e ../invenio-db
--e ../invenio-deposit
--e ../invenio-files-rest
--e ../invenio-iiif
--e ../invenio-indexer
--e ../invenio-mail
--e ../invenio-oaiharvester
--e ../invenio-oaiserver
--e ../invenio-oauth2server
--e ../invenio-previewer
--e ../invenio-queues
--e ../invenio-records
--e ../invenio-records-rest
--e ../invenio-resourcesyncclient
--e ../invenio-resourcesyncserver
--e ../invenio-s3
-# -e git+https://github.com/RCOSDP/invenio-search.git@cff9744c5dc651893a9c51672c5b8da9adc21e16#egg=invenio_search
-# -e git+https://github.com/RCOSDP/invenio-search-ui.git@74bd3b2990ff27b39e01b6b31be9a0b5fda3dd0f#egg=invenio_search_ui
--e ../invenio-stats

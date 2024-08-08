@@ -83,139 +83,146 @@ def test_session_activity_model(app):
 
 def test_profiles(app):
     """Test the user profile."""
-    user = User(email="admin@inveniosoftware.org")
-    profile = {
-        "full_name": "Invenio Admin",
-    }
-
-    with pytest.raises(ValueError):
-        # the profile doesn't expect an 'email' value
-        user.user_profile = {
-            **profile,
-            "email": "admin@inveniosoftware.org",
+    with app.app_context():
+        user = User(email="admin@inveniosoftware.org")
+        profile = {
+            "full_name": "Invenio Admin",
         }
 
-    assert user.user_profile == {}
+        with pytest.raises(ValueError):
+            # the profile doesn't expect an 'email' value
+            user.user_profile = {
+                **profile,
+                "email": "admin@inveniosoftware.org",
+            }
 
-    # a valid profile should be accepted
-    user.user_profile = profile
-    assert dict(user.user_profile) == profile
+        assert user.user_profile == {}
 
-    # setting expected properties should work
-    assert len(user.user_profile) == 1
-    assert user.user_profile["full_name"] == "Invenio Admin"
+        # a valid profile should be accepted
+        user.user_profile = profile
+        assert dict(user.user_profile) == profile
 
-    # but setting unexpected properties should not work
-    with pytest.raises(ValueError):
-        user.user_profile["invalid"] = "value"
+        # setting expected properties should work
+        assert len(user.user_profile) == 1
+        assert user.user_profile["full_name"] == "Invenio Admin"
 
-    # similar with wrong types for expected fields
-    with pytest.raises(ValueError):
-        user.user_profile["email"] = 1
+        # but setting unexpected properties should not work
+        with pytest.raises(ValueError):
+            user.user_profile["invalid"] = "value"
 
-    assert len(user.user_profile) == 1
-    assert user.user_profile["full_name"] == "Invenio Admin"
-    assert (
-        app.config["ACCOUNTS_DEFAULT_EMAIL_VISIBILITY"]
-        == user.preferences["email_visibility"]
-    )
-    assert (
-        app.config["ACCOUNTS_DEFAULT_USER_VISIBILITY"] == user.preferences["visibility"]
-    )
+        # similar with wrong types for expected fields
+        with pytest.raises(ValueError):
+            user.user_profile["email"] = 1
+
+        assert len(user.user_profile) == 1
+        assert user.user_profile["full_name"] == "Invenio Admin"
+        assert (
+            app.config["ACCOUNTS_DEFAULT_EMAIL_VISIBILITY"]
+            == user.preferences["email_visibility"]
+        )
+        assert (
+            app.config["ACCOUNTS_DEFAULT_USER_VISIBILITY"] == user.preferences["visibility"]
+        )
 
 
 def test_custom_profiles(app):
     """Test if the customization mechanism for user profiles works."""
-    app.config["ACCOUNTS_USER_PROFILE_SCHEMA"] = CustomProfile()
-    user = User(email="admin@inveniosoftware.org")
+    with app.app_context():
+        app.config["ACCOUNTS_USER_PROFILE_SCHEMA"] = CustomProfile()
+        user = User(email="admin@inveniosoftware.org")
 
-    # the default fields aren't allowed in the custom schema
-    with pytest.raises(ValueError):
-        user.user_profile = {
-            "full_name": "Invenio Admin",
-        }
+        # the default fields aren't allowed in the custom schema
+        with pytest.raises(ValueError):
+            user.user_profile = {
+                "full_name": "Invenio Admin",
+            }
 
-    # the expected properties should work...
-    user.user_profile = {"file_descriptor": 1}
-    assert dict(user.user_profile) == {"file_descriptor": 1}
+        # the expected properties should work...
+        user.user_profile = {"file_descriptor": 1}
+        assert dict(user.user_profile) == {"file_descriptor": 1}
 
-    # ... but not with unexpected types!
-    with pytest.raises(ValueError):
-        user.user_profile["file_descriptor"] = "1"
+        # ... but not with unexpected types!
+        with pytest.raises(ValueError):
+            user.user_profile["file_descriptor"] = "1"
 
-    assert dict(user.user_profile) == {"file_descriptor": 1}
+        assert dict(user.user_profile) == {"file_descriptor": 1}
 
 
 def test_user_domain_attr(app):
-    u = User(email="admin@CERN.CH")
-    db.session.commit()
-    assert u.domain == "cern.ch"
+    with app.app_context():
+        u = User(email="admin@CERN.CH")
+        db.session.commit()
+        assert u.domain == "cern.ch"
 
 
 def test_user_username_case_insensitive_comparator(app):
-    ds = app.extensions["invenio-accounts"].datastore
-    ds.create_user(username="UserName")
-    ds.commit()
+    with app.app_context():
+        ds = app.extensions["invenio-accounts"].datastore
+        ds.create_user(username="UserName")
+        ds.commit()
 
-    u = ds.find_user(username="uSERnAME")
-    assert u is not None
-    assert u.username == "UserName"
+        u = ds.find_user(username="uSERnAME")
+        assert u is not None
+        assert u.username == "UserName"
 
 
 def test_domain_model(app):
-    d = Domain.create("CERN.CH")
-    assert d.domain == "cern.ch"
-    assert d.tld == "ch"
-    assert d.status == DomainStatus.new
-    assert d.flagged == False
-    assert d.flagged_source == ""
-    assert d.org is None
-    assert d.category is None
-    db.session.commit()
-
-    # Support top level domains like
-    d = Domain.create("cern")
-    assert d.domain == "cern"
-    assert d.tld == "cern"
-    db.session.commit()
-
-    # Normalise domain names
-    d = Domain.create("zenodo.org.")
-    assert d.domain == "zenodo.org"
-    assert d.tld == "org"
-    db.session.commit()
-
-    with pytest.raises(Exception):
-        Domain.create("cern.ch.")
+    with app.app_context():
+        d = Domain.create("CERN.CH")
+        assert d.domain == "cern.ch"
+        assert d.tld == "ch"
+        assert d.status == DomainStatus.new
+        assert d.flagged == False
+        assert d.flagged_source == ""
+        assert d.org is None
+        assert d.category is None
         db.session.commit()
+
+        # Support top level domains like
+        d = Domain.create("cern")
+        assert d.domain == "cern"
+        assert d.tld == "cern"
+        db.session.commit()
+
+        # Normalise domain names
+        d = Domain.create("zenodo.org.")
+        assert d.domain == "zenodo.org"
+        assert d.tld == "org"
+        db.session.commit()
+
+        with pytest.raises(Exception):
+            Domain.create("cern.ch.")
+            db.session.commit()
 
 
 def test_domain_org(app):
-    parent = DomainOrg.create(
-        "https://ror.org/01cwqze88",
-        "National Institutes of Health",
-        json={"country": "us"},
-    )
+    with app.app_context():
+        parent = DomainOrg.create(
+            "https://ror.org/01cwqze88",
+            "National Institutes of Health",
+            json={"country": "us"},
+        )
 
-    child = DomainOrg.create(
-        "https://ror.org/040gcmg81",
-        "National Cancer Institute",
-        json={"country": "us"},
-        parent=parent,
-    )
-    db.session.commit()
+        child = DomainOrg.create(
+            "https://ror.org/040gcmg81",
+            "National Cancer Institute",
+            json={"country": "us"},
+            parent=parent,
+        )
+        db.session.commit()
 
-    d = Domain.create("cancer.gov", status=DomainStatus.verified, org=child)
-    db.session.commit()
+        d = Domain.create("cancer.gov", status=DomainStatus.verified, org=child)
+        db.session.commit()
 
-    assert d.org == child
-    assert child.parent == parent
+        assert d.org == child
+        assert child.parent == parent
 
 
 def test_domain_category(app):
-    c1 = DomainCategory.create("spammer")
-    c2 = DomainCategory.create("organisation")
-    db.session.commit()
+    with app.app_context():
+        c1 = DomainCategory.create("spammer")
+        c2 = DomainCategory.create("organisation")
+        db.session.commit()
 
-    c = DomainCategory.get("spammer")
-    assert c.label == "spammer"
+        c = DomainCategory.get("spammer")
+        assert c.label == "spammer"
