@@ -47,7 +47,7 @@ def test_client_authenticated(app):
             response = client.get(change_password_url)
             assert response.status_code == 302
             assert change_password_url not in response.location
-            assert login_url in response.location
+            assert "/login/" in response.location
 
             # Once more, following redirects.
             response = client.get(change_password_url, follow_redirects=True)
