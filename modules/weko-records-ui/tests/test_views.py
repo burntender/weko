@@ -502,7 +502,7 @@ def test_default_view_method(app, records, itemtypes, indexstyle ,users):
                         #     default_view_method(recid, record ,'helloworld.pdf')
                         pid_ver = MagicMock
                         pid_ver.exists = False
-                        with patch('weko_records_ui.views.PIDVersioning',return_value=pid_ver):
+                        with patch('weko_records_ui.views.PIDNodeVersioning',return_value=pid_ver):
                             with pytest.raises(NotFound) : #404
                                 assert default_view_method(recid, record ,'helloworld.pdf')
 
@@ -513,7 +513,7 @@ def test_default_view_method(app, records, itemtypes, indexstyle ,users):
                         mock.object_uuid = uuid.uuid4()
                         pid_ver.children = [mock]
                         pid_ver.get_children = lambda ordered,pid_status : [mock]
-                        with patch('weko_records_ui.views.PIDVersioning',return_value=pid_ver):
+                        with patch('weko_records_ui.views.PIDNodeVersioning',return_value=pid_ver):
                             with patch('weko_records_ui.views.WekoRecord.get_record',return_value={'_deposit':{'status':'draft'}}):
                                 assert default_view_method(recid, record ,'helloworld.pdf').status_code == 200
                         

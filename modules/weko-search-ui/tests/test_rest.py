@@ -5,7 +5,7 @@ import json
 import pytest
 from mock import patch, MagicMock
 from flask import Response, current_app
-from flask_babelex import get_locale
+from flask_babel import get_locale
 from elasticsearch_dsl import response, Search
 from elasticsearch.exceptions import ElasticsearchException
 from tests.conftest import json_data

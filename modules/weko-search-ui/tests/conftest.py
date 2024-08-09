@@ -33,8 +33,8 @@ import requests
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
 from flask import Flask, url_for
-from flask_babelex import Babel
-from flask_babelex import lazy_gettext as _
+from flask_babel import Babel
+from flask_babel import lazy_gettext as _
 from flask_celeryext import FlaskCeleryExt
 from flask_login import LoginManager, current_user, login_user
 from flask_menu import Menu
@@ -98,7 +98,7 @@ from invenio_oaiserver import InvenioOAIServer
 from invenio_oaiserver.models import Identify, OAISet
 from invenio_pidrelations import InvenioPIDRelations
 from invenio_pidrelations.contrib.records import RecordDraft
-from invenio_pidrelations.contrib.versioning import PIDVersioning
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidstore import InvenioPIDStore, current_pidstore
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus, Redirect
@@ -3766,7 +3766,7 @@ def make_record(db, indexer, i, filepath, filename, mimetype, doi_prefix=None):
         status=PIDStatus.REGISTERED,
     )
 
-    h1 = PIDVersioning(parent=parent)
+    h1 = PIDNodeVersioning(parent=parent)
     h1.insert_child(child=recid)
     h1.insert_child(child=recid_v1)
     RecordDraft.link(recid, depid)

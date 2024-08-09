@@ -43,7 +43,7 @@ from marshmallow.exceptions import ValidationError
 
 from flask import Response, Blueprint, abort, current_app, has_request_context, \
     jsonify, make_response, render_template, request, session, url_for, send_file
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from weko_admin.api import validate_csrf_header
 from flask_wtf import FlaskForm
@@ -51,7 +51,7 @@ from invenio_accounts.models import Role, User, userrole
 from invenio_db import db
 from invenio_files_rest.utils import remove_file_cancel_action
 from invenio_oauth2server import require_api_auth, require_oauth_scopes
-from invenio_pidrelations.contrib.versioning import PIDVersioning
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidstore.errors import PIDDoesNotExistError,PIDDeletedError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
@@ -1504,10 +1504,9 @@ def next_action(activity_id='0', action_id=0):
             item_ids = [item_id]
             if not recid:
                 if ".0" in current_pid.pid_value:
-                    pv = PIDVersioning(child=pid_without_ver)
-                    last_ver = PIDVersioning(parent=pv.parent,child=pid_without_ver).get_children(
-                        pid_status=PIDStatus.REGISTERED
-                    ).filter(PIDRelation.relation_type == 2).order_by(
+                    parent_pid=PIDNodeVersioning(pid=pid_without_ver).parents.one_or_none()
+                    pv=PIDNodeVersioning(pid=parent_pid)
+                    last_ver=pv.children.order_by(
                         PIDRelation.index.desc()).first()
                     if last_ver is None:
                         res = ResponseMessageSchema().load({"code":-1, "msg":"can not get last_ver"})
@@ -2097,9 +2096,10 @@ def cancel_action(activity_id='0', action_id=0):
                         current_app.logger.error("cancel_action: can not get PersistentIdentifier")
                         res = ResponseMessageSchema().load({"code":-1, "msg":"can not get PersistentIdentifier"})
                         return jsonify(res.data), 500
-                    cancel_pv = PIDVersioning(child=cancel_pid)
+                    parent_pid=PIDNodeVersioning(pid=cancel_pid).parents.one_or_none()
+                    cancel_pv=PIDNodeVersioning(pid=parent_pid)
 
-                    if cancel_pv.exists:
+                    if cancel_pv is not None:
                         parent_pid = deepcopy(cancel_pv.parent)
                         cancel_pv.remove_child(cancel_pid)
                         # rollback parent info

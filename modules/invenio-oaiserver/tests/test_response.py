@@ -12,7 +12,7 @@ import uuid
 from datetime import timedelta, datetime
 from mock import patch
 from flask import current_app
-from flask_babelex import Babel
+from flask_babel import Babel
 from werkzeug.utils import cached_property
 from sqlalchemy.orm.exc import NoResultFound
 from lxml import etree

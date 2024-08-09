@@ -22,7 +22,7 @@ import tempfile
 from datetime import date, datetime, timedelta
 import pytest
 from flask import Flask
-from flask_babelex import Babel
+from flask_babel import Babel
 from sqlalchemy_utils.functions import create_database, database_exists
 
 from invenio_accounts import InvenioAccounts

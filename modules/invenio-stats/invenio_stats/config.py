@@ -11,7 +11,7 @@
 
 import os
 
-from flask_babelex import get_timezone
+from flask_babel import get_timezone
 from kombu import Exchange
 
 from .utils import default_permission_factory, weko_permission_factory

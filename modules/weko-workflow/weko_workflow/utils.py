@@ -33,7 +33,7 @@ import redis
 from redis import sentinel
 from celery.app.control import Inspect
 from flask import current_app, request, session
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import current_user
 from invenio_accounts.models import Role, User, userrole
 from invenio_cache import current_cache
@@ -42,7 +42,7 @@ from invenio_files_rest.models import Bucket, ObjectVersion
 from invenio_i18n.ext import current_i18n
 from invenio_mail.admin import MailSettingView
 from invenio_mail.models import MailConfig
-from invenio_pidrelations.contrib.versioning import PIDVersioning
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidstore.models import PersistentIdentifier, \
     PIDDoesNotExistError, PIDStatus
@@ -1900,10 +1900,9 @@ def handle_finish_workflow(deposit, current_pid, recid):
                     merge_data_to_record_without_version(current_pid)
                 _deposit.publish()
 
-                pv = PIDVersioning(child=pid_without_ver)
-                last_ver = PIDVersioning(parent=pv.parent,child=pid_without_ver).get_children(
-                    pid_status=PIDStatus.REGISTERED
-                ).filter(PIDRelation.relation_type == 2).order_by(
+                parent_pid=PIDNodeVersioning(pid=pid_without_ver).parents.one_or_none()
+                pv=PIDNodeVersioning(pid=parent_pid)
+                last_ver=pv.children.order_by(
                     PIDRelation.index.desc()).first()
                 # Handle Edit workflow
                 if ".0" in current_pid.pid_value:

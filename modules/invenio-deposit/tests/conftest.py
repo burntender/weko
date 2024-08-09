@@ -21,7 +21,7 @@ import pytest
 from elasticsearch.exceptions import RequestError
 from flask import Flask
 from flask.cli import ScriptInfo
-from flask_babelex import Babel
+from flask_babel import Babel
 from flask_breadcrumbs import Breadcrumbs
 from flask_celeryext import FlaskCeleryExt
 from flask_oauthlib.provider import OAuth2Provider

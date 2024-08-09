@@ -45,7 +45,7 @@ SPHINX-END
 from __future__ import absolute_import, print_function
 
 from flask import Flask
-from flask_babelex import Babel
+from flask_babel import Babel
 
 from invenio_resourcesyncserver import InvenioResourceSyncServer
 from invenio_resourcesyncserver.views import blueprint

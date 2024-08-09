@@ -35,7 +35,7 @@ from datetime import datetime
 import pytest
 from flask import Flask
 from flask_menu import Menu
-from flask_babelex import Babel
+from flask_babel import Babel
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.models import User, Role
 from invenio_access.models import ActionRoles, ActionUsers

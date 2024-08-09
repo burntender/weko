@@ -37,7 +37,7 @@ from mock import patch
 from click.testing import CliRunner
 from flask import Blueprint, Flask
 from flask_assets import assets
-from flask_babelex import Babel
+from flask_babel import Babel
 from flask_menu import Menu
 from invenio_access import InvenioAccess
 from invenio_access.models import ActionRoles, ActionUsers
@@ -77,8 +77,8 @@ from celery.messaging import establish_connection
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidstore import InvenioPIDStore
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus, Redirect
-from invenio_pidrelations.contrib.versioning import PIDVersioning
-from invenio_pidrelations.contrib.records import RecordDraft
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
+from invenio_pidrelations.contrib.draft import PIDNodeDraft
 from invenio_records import InvenioRecords
 from invenio_records_rest import InvenioRecordsREST
 from weko_redis.redis import RedisConnection
@@ -23186,11 +23186,11 @@ def make_record(db, indexer, i, files, thumbnail=None):
         status=PIDStatus.REGISTERED,
     )
 
-    h1 = PIDVersioning(parent=parent)
+    h1 = PIDNodeVersioning(parent=parent)
     h1.insert_child(child=recid)
     h1.insert_child(child=recid_v1)
-    RecordDraft.link(recid, depid)
-    RecordDraft.link(recid_v1, depid_v1)
+    PIDNodeDraft(pid=recid).insert_child(depid)
+    PIDNodeDraft(pid=recid_v1).insert_child(depid_v1)
 
     if i % 2 == 1:
         doi = PersistentIdentifier.create(

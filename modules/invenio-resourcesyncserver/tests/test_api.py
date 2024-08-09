@@ -7,7 +7,7 @@ import datetime
 from mock import patch, MagicMock, Mock
 from flask import current_app, make_response, request
 from flask_login import current_user
-from flask_babelex import Babel
+from flask_babel import Babel
 
 from invenio_resourcesyncserver.api import ResourceListHandler, ChangeListHandler
 from invenio_resourcesyncserver.models import ChangeListIndexes, ResourceListIndexes
@@ -376,14 +376,14 @@ def test_get_change_list_content_xml_ChangeListHandler(i18n_app, db, users):
                     )
 
                     with patch("invenio_resourcesyncserver.api.Resource", return_value=return_data):
-                        with patch("invenio_resourcesyncserver.api.PIDVersioning", return_value=return_data):
+                        with patch("invenio_resourcesyncserver.api.PIDNodeVersioning", return_value=return_data):
                             assert "xml" in test_str.get_change_list_content_xml(
                                 from_date=from_date,
                                 from_date_args=from_date_args,
                                 to_date_args=to_date_args
                             ) 
 
-                        with patch("invenio_resourcesyncserver.api.PIDVersioning", return_value=return_data):
+                        with patch("invenio_resourcesyncserver.api.PIDNodeVersioning", return_value=return_data):
                             return_data.last_child = MagicMock()
                             return_data.last_child.pid_value = "test"
                             assert "xml" in test_str.get_change_list_content_xml(

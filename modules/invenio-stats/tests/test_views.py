@@ -158,7 +158,7 @@ def test_query_record_view_count(client, db, es, records):
             }
         ]
     }
-    with patch("invenio_stats.views.PIDVersioning", side_effect=mockPIDVersioning):
+    with patch("invenio_stats.views.PIDNodeVersioning", side_effect=mockPIDVersioning):
         with patch("invenio_stats.queries.ESTermsQuery.run", return_value=_res_data):
             res = client.get(
                 url_for("invenio_stats.get_record_view_count", record_id=_uuid))

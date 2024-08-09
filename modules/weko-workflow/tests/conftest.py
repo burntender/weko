@@ -33,7 +33,7 @@ from mock import patch
 
 import pytest
 from flask import Flask, session, url_for, Response
-from flask_babelex import Babel, lazy_gettext as _
+from flask_babel import Babel, lazy_gettext as _
 from flask_menu import Menu
 from elasticsearch import Elasticsearch
 from invenio_theme import InvenioTheme

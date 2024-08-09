@@ -1053,12 +1053,12 @@ class TestWekoRecord:
             assert record.get_titles=="title"
 
         app.config['BABEL_DEFAULT_LOCALE'] = 'ja'
-        #from flask_babelex import refresh; refresh()
+        #from flask_babel import refresh; refresh()
         with app.test_request_context():
             assert record.get_titles=="タイトル"
 
         app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
-        #from flask_babelex import refresh; refresh()
+        #from flask_babel import refresh; refresh()
         with app.test_request_context():
             assert record.get_titles=="title"
 

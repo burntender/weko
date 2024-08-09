@@ -40,7 +40,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client.ingest import IngestClient
 from flask import Blueprint, Flask
 from flask_assets import assets
-from flask_babelex import Babel
+from flask_babel import Babel
 from flask_login import LoginManager, UserMixin
 from flask_menu import Menu
 from invenio_access import InvenioAccess
@@ -70,7 +70,7 @@ from invenio_oaiserver.models import Identify
 from invenio_oaiserver.views.server import blueprint as invenio_oaiserver_blueprint
 from invenio_pidrelations import InvenioPIDRelations
 from invenio_pidrelations.contrib.records import RecordDraft
-from invenio_pidrelations.contrib.versioning import PIDVersioning
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidstore import InvenioPIDStore
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus, Redirect
@@ -2159,7 +2159,7 @@ def make_record(db, indexer, i, filepath, filename, mimetype):
         status=PIDStatus.REGISTERED,
     )
 
-    h1 = PIDVersioning(parent=parent)
+    h1 = PIDNodeVersioning(parent=parent)
     h1.insert_child(child=recid)
     h1.insert_child(child=recid_v1)
     RecordDraft.link(recid, depid)

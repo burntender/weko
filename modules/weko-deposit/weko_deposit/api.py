@@ -44,8 +44,8 @@ from invenio_files_rest.models import Bucket, Location, MultipartObject, ObjectV
 from invenio_i18n.ext import current_i18n
 from invenio_indexer.api import RecordIndexer
 from invenio_oaiserver.models import OAISet
-from invenio_pidrelations.contrib.records import RecordDraft
-from invenio_pidrelations.contrib.versioning import PIDVersioning
+from invenio_pidrelations.contrib.draft import PIDNodeDraft
+from invenio_pidrelations.contrib.versioning import PIDNodeVersioning
 from invenio_pidrelations.models import PIDRelation
 from invenio_pidrelations.serializers.utils import serialize_relations
 from invenio_pidstore.errors import PIDDoesNotExistError, PIDInvalidAction
@@ -783,8 +783,8 @@ class WekoDeposit(Deposit):
 
         recid = PersistentIdentifier.get('recid', record_id)
         depid = PersistentIdentifier.get('depid', record_id)
-        PIDVersioning(parent=parent_pid).insert_draft_child(child=recid)
-        RecordDraft.link(recid, depid)
+        PIDNodeVersioning(pid=parent_pid).insert_draft_child(child_pid=recid)
+        PIDNodeDraft(pid=recid).insert_child(depid)
         # Update this object_uuid for item_id of activity.
         if session and 'activity_info' in session:
             activity = session['activity_info']
@@ -1024,11 +1024,12 @@ class WekoDeposit(Deposit):
 
         # Check that there is not a newer draft version for this record
         # and this is the latest version
-        versioning = PIDVersioning(child=pid)
+        parent_pid=PIDNodeVersioning(pid=pid).parents.one_or_none()
+        versioning=PIDNodeVersioning(pid=parent_pid)
         record = WekoDeposit.get_record(pid.object_uuid)
 
         assert PIDStatus.REGISTERED == pid.status
-        if not record or not versioning.exists or versioning.draft_child:
+        if not record or parent_pid is None or versioning.draft_child:
             return None
 
         data = record.dumps()
@@ -1058,15 +1059,14 @@ class WekoDeposit(Deposit):
         depid = PersistentIdentifier.get(
             'depid', str(data['_deposit']['id']))
 
-        PIDVersioning(
-            parent=versioning.parent).insert_draft_child(
-            child=recid)
-        RecordDraft.link(recid, depid)
+        PIDNodeVersioning(pid=versioning.parent).insert_draft_child(child_pid=recid)
+        PIDNodeDraft(pid=recid).insert_child(depid)
 
         if is_draft:
             with db.session.begin_nested():
                 # Set relation type of draft record is 3: Draft
-                parent_pid = PIDVersioning(child=recid).parent
+                parent_pid = PIDNodeVersioning(pid=recid).parents.one_or_none()
+                
                 relation = PIDRelation.query. \
                     filter_by(parent=parent_pid,
                             child=recid).one_or_none()
@@ -2355,7 +2355,8 @@ class WekoRecord(Record):
     @property
     def pid_parent(self):
         """Return pid_value of doi identifier."""
-        pid_ver = PIDVersioning(child=self.pid_recid)
+        parent_pid=PIDNodeVersioning(pid=self.pid_recid).parents.one_or_none()
+        pid_ver=PIDNodeVersioning(pid=parent_pid)
         if pid_ver:
             # Get pid parent of draft record
             if ".0" in str(self.pid_recid.pid_value):

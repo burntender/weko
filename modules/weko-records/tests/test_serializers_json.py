@@ -48,7 +48,7 @@ def test_json_serializer(app, db, records, hit):
 
     data2.exists = exists
 
-    with patch("weko_records.serializers.json.PIDVersioning", return_value=data2):
+    with patch("weko_records.serializers.json.PIDNodeVersioning", return_value=data2):
         with patch("weko_records.serializers.json.serialize_related_identifiers", return_value=[True]):
             assert _json_serializer.transform_record(records[0][0], data1)
 
