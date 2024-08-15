@@ -46,7 +46,7 @@ from os.path import dirname, join
 
 import jinja2
 from flask import Flask, cli, current_app
-from flask_babelex import Babel
+from flask_babel import Babel
 from invenio_access import InvenioAccess
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.views import blueprint as accounts_blueprint

@@ -11,12 +11,11 @@
 import datetime
 import time
 
-from turtle import pd
 from unittest.mock import patch
 
 import pytest
-from conftest import _create_file_download_event
-from helpers import mock_date
+from .conftest import _create_file_download_event
+from .helpers import mock_date
 from invenio_search import current_search, current_search_client
 from invenio_search.engine import dsl
 

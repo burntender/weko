@@ -26,7 +26,7 @@ from sqlalchemy_utils.functions import create_database, database_exists
 from kombu import Exchange, Queue
 from flask import appcontext_pushed, g
 from flask.cli import ScriptInfo
-from helpers import mock_date
+from .helpers import mock_date
 from invenio_access import InvenioAccess
 from invenio_access.models import ActionRoles, ActionUsers
 from invenio_accounts.testutils import create_test_user

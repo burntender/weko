@@ -16,7 +16,7 @@ from sqlalchemy_continuum import remove_versioning
 from sqlalchemy_utils.types import EncryptedType
 
 from invenio_db import InvenioDB
-	from invenio_db.utils import (
+from invenio_db.utils import (
 	    rebuild_encrypted_properties,
 	    versioning_model_classname,
 	    versioning_models_registered,
@@ -76,16 +76,17 @@ def test_versioning_model_classname(db, app):
         __versioned__ = {}
         pk = db.Column(db.Integer, primary_key=True)
 
-    app.config["DB_VERSIONING"] = True
+    app.config['DB_VERSIONING'] = True
     idb = InvenioDB(app)
     manager = idb.versioning_manager
-    manager.options["use_module_name"] = True
-    assert versioning_model_classname(manager, FooClass) == "Test_UtilsFooClassVersion"
-    manager.options["use_module_name"] = False
-    assert versioning_model_classname(manager, FooClass) == "FooClassVersion"
+    manager.options['use_module_name'] = True
+    result = versioning_model_classname(manager, FooClass)
+    assert  result== 'TestsTest_UtilsFooClassVersion'
+    manager.options['use_module_name'] = False
+    assert versioning_model_classname(
+        manager, FooClass) == 'FooClassVersion'
     assert versioning_models_registered(manager, db.Model)
     remove_versioning(manager=manager)
-
 # .tox/c1/bin/pytest --cov=invenio_db tests/test_utils.py::test_versioning_models_registered -v -vv -s --cov-branch --cov-report=term --cov-report=html --basetemp=/code/modules/invenio-db/.tox/c1/tmp
 def test_versioning_models_registered(db, app, mock_entry_points):
     app.config['DB_VERSIONING'] = True

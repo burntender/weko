@@ -16,7 +16,7 @@ from click.testing import CliRunner
 from tests.conftest import _create_file_download_event, _create_record_view_event
 from elasticsearch_dsl import Search
 
-from helpers import mock_date
+from .helpers import mock_date
 from invenio_search import current_search
 from invenio_search.engine import dsl
 

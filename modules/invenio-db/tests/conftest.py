@@ -19,6 +19,7 @@ from mock import patch
 from os.path import dirname, join
 from pkg_resources import EntryPoint
 from werkzeug.utils import import_string
+from invenio_i18n import Babel
 
 
 from invenio_db.utils import alembic_test_context
@@ -59,14 +60,14 @@ def base_app(instance_path):
         SERVER_NAME="test_server",
         DB_VERSIONING=False,
         DB_VERSIONING_USER_MODEL=None,
-        # SQLALCHEMY_DATABASE_URI=os.environ.get(
-        #     'SQLALCHEMY_DATABASE_URI','sqlite:///test.db')
-        SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
-                                          'postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest'),
+        SQLALCHEMY_DATABASE_URI=os.environ.get(
+            'SQLALCHEMY_DATABASE_URI','sqlite:///test.db'),
+        # SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
+        #                                   'postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest'),
         ALEMBIC_CONTEXT=alembic_test_context(),
     )
-    
-    #InvenioDB(app_)
+    Babel(app_)
+    # InvenioDB(app_)
     
     return app_
 

@@ -37,7 +37,11 @@ def lazy_result(f):
 
     return decorated
 
-
+def _verify_date(ctx, param, value):
+    if value:
+        dateutil_parse(value)
+        return value
+    
 def _parse_date(ctx, param, value):
     if value:
         return dateutil_parse(value)

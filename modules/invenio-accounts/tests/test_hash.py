@@ -26,7 +26,7 @@ from invenio_accounts.testutils import (
     login_user_via_view,
 )
 
-
+# .tox/c1/bin/pytest --cov=invenio_accounts tests/test_hash.py::test_mysql_aes_encrypt -vv -s --cov-branch --cov-report=term --basetemp=/code/modules/invenio-accounts/.tox/c1/tmp
 def test_mysql_aes_encrypt():
     """Test mysql_aes_encrypt."""
     assert (

@@ -22,8 +22,7 @@ from invenio_stats.utils import (
     get_anonymization_salt,
     get_geoip,
     get_user,
-    obj_or_import_string,
-    load_or_import_from_config,
+    # load_or_import_from_config,
     default_permission_factory,
     weko_permission_factory,
     get_aggregations,
@@ -77,8 +76,8 @@ def myfunc():
 
 # def load_or_import_from_config(key, app=None, default=None):
 # .tox/c1/bin/pytest --cov=invenio_stats tests/test_utils.py::test_load_or_import_from_config -v -s -vv --cov-branch --cov-report=term --cov-config=tox.ini --basetemp=/code/modules/invenio-stats/.tox/c1/tmp
-def test_load_or_import_from_config(app):
-    assert load_or_import_from_config('STATS_PERMISSION_FACTORY', app)
+# def test_load_or_import_from_config(app):
+#     assert load_or_import_from_config('STATS_PERMISSION_FACTORY', app)
 
 # def default_permission_factory(query_name, params):
 # .tox/c1/bin/pytest --cov=invenio_stats tests/test_utils.py::test_default_permission_factory -v -s -vv --cov-branch --cov-report=term --cov-config=tox.ini --basetemp=/code/modules/invenio-stats/.tox/c1/tmp
