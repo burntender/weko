@@ -25,7 +25,7 @@ from invenio_access import InvenioAccess
 from invenio_access.models import ActionRoles, ActionUsers, Role
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.testutils import create_test_user
-from invenio_accounts.views import blueprint as accounts_blueprint
+from invenio_accounts.views.settings import create_settings_blueprint
 from invenio_db import InvenioDB
 from invenio_db import db as db_
 from invenio_db.utils import drop_alembic_version_table
@@ -75,7 +75,7 @@ def _compile_drop_sequence(element, compiler, **kwargs):
 
 
 @pytest.fixture()
-def base_app():
+def base_app(config=None):
     """Flask application fixture."""
     app_ = Flask("testapp")
     app_.config.update(
@@ -84,14 +84,18 @@ def base_app():
         CELERY_ALWAYS_EAGER=True,
         CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
         # Celery 4
-        CELERY_TASK_ALWAYS_EAGER=True,
-        CELERY_TASK_EAGER_PROPAGATES=True,
+        # CELERY_TASK_ALWAYS_EAGER=True,
+        task_always_eager=True,
+        # CELERY_TASK_EAGER_PROPAGATES=True,
+        task_eager_propagates=True,
         SQLALCHEMY_TRACK_MODIFICATIONS=True,
-        # SQLALCHEMY_DATABASE_URI=os.environ.get(
-        #     "SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:"
-        # ),
-        SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest',
+        SQLALCHEMY_DATABASE_URI=os.environ.get(
+            "SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:"
+        ),
+        # SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://invenio:dbpass123@postgresql:5432/wekotest',
         WTF_CSRF_ENABLED=False,
+        DB_VERSIONING=False,
+        DB_VERSIONING_USER_MODEL=None,
         SERVER_NAME="invenio.org",
         SECURITY_PASSWORD_SALT="TEST_SECURITY_PASSWORD_SALT",
         SECRET_KEY="TEST_SECRET_KEY",
@@ -105,9 +109,9 @@ def base_app():
     )
 
     FlaskCeleryExt(app_)
-    InvenioDB(app_)
     Babel(app_)
     Menu(app_)
+    InvenioDB(app_)
     InvenioPreviewer(app_)
 
     return app_
@@ -119,7 +123,7 @@ def app(base_app):
     InvenioI18N(base_app)
     InvenioAccounts(base_app)
     InvenioAccess(base_app)
-    base_app.register_blueprint(accounts_blueprint)
+    base_app.register_blueprint(create_settings_blueprint(base_app))
     InvenioFilesREST(base_app)
     base_app.register_blueprint(blueprint)
 

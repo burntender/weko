@@ -55,7 +55,7 @@ setup_requires = [
 ]
 
 install_requires = [
-    "Flask-BabelEx>=0.9.2",
+    "Flask-Babel>=0.9.2",
     "Flask-Plugins>=1.6.1",
 ]
 
