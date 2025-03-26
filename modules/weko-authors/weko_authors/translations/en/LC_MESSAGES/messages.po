@@ -298,8 +298,6 @@ msgstr ""
 #~ msgid "Error"
 #~ msgstr ""
 
-#~ msgid "Success"
-#~ msgstr ""
 
 #~ msgid "Failure"
 #~ msgstr ""
@@ -386,8 +384,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "I agree to the terms of use."
-#~ msgid "The selected target table and the import file format are different."
 #~ msgstr ""
+
 
 #~ msgid "Scheme is required item."
 #~ msgstr ""
@@ -405,4 +403,22 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The specified scheme is used in the author ID."
+#~ msgstr ""
+
+#~ msgid "WEKO ID is required item."
+#~ msgstr ""
+
+#~ msgid "WEKO ID is Half-width digits only"
+#~ msgstr ""
+
+#~msgid "Specified Affiliation Identifier Scheme '{}' does not exist."
+#~msgstr ""
+
+#~ msgid "Affiliation Period must be in the format:yyyy-MM-dd, blank '{}'"
+#~ msgstr ""
+
+#~ msgid "Period end must be after Period start."
+#~ msgstr ""
+
+#~ msgid "Specified WEKO ID already exist."
 #~ msgstr ""
