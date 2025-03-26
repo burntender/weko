@@ -212,14 +212,6 @@ def _process(data_size, data_from, process_counter, target, origin_pkid_list, ke
                         }
                     },
                     {
-                        "bool": {
-                            "should": [
-                                {"term": {"relation_version_is_last": True}},
-                                {"bool": {"must_not": {"exists": {"field": "relation_version_is_last"}}}}
-                            ]
-                        }
-                    }, 
-                    {
                         "terms": {
                             "author_link.raw": origin_pkid_list
                         }
@@ -240,6 +232,9 @@ def _process(data_size, data_from, process_counter, target, origin_pkid_list, ke
     update_es_authorinfo = []
     for item in search['hits']['hits']:
         item_id = item['_source']['control_number']
+        # draftとmasterのみ更新するため、それ以外は飛ばす処理を入れる。
+        if '.' in str(item_id) and str(item_id).split('.')[-1][-1] != '0':
+            continue
         object_uuid, record_ids, author_link, weko_link = \
             _update_author_data(item_id, record_ids, process_counter, target, origin_pkid_list, key_map, author_prefix, affiliation_id, force_change)
         if object_uuid:
