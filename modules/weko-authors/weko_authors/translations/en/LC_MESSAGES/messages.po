@@ -189,236 +189,236 @@ msgstr ""
 #~ msgid "Author_On_1_Page"
 #~ msgstr "On 1 Page:"
 
-#~ msgid "Export target"
-#~ msgstr ""
+msgid "Export target"
+msgstr ""
 
-#~ msgid "Export all"
-#~ msgstr ""
+msgid "Export all"
+msgstr ""
 
-#~ msgid "Download URL"
-#~ msgstr ""
+msgid "Download URL"
+msgstr ""
 
-#~ msgid "Are you sure you want to export all?"
-#~ msgstr ""
+msgid "Are you sure you want to export all?"
+msgstr ""
 
-#~ msgid "Confirm"
-#~ msgstr ""
+msgid "Confirm"
+msgstr ""
 
-#~ msgid "Execute"
-#~ msgstr ""
+msgid "Execute"
+msgstr ""
 
-#~ msgid "Cancel"
-#~ msgstr ""
+msgid "Cancel"
+msgstr ""
 
-#~ msgid "Are you sure you want to cancel process of exporting all?"
-#~ msgstr ""
+msgid "Are you sure you want to cancel process of exporting all?"
+msgstr ""
 
-#~ msgid "Resume"
-#~ msgstr ""
+msgid "Resume"
+msgstr ""
 
-#~ msgid "Author DB"
-#~ msgstr ""
+msgid "Author DB"
+msgstr ""
 
-#~ msgid "Are you sure you want to cancel process of exporting all creator?"
-#~ msgstr ""
+msgid "Are you sure you want to cancel process of exporting all creator?"
+msgstr ""
 
-#~ msgid "Failed to cancel export."
-#~ msgstr ""
+msgid "Failed to cancel export."
+msgstr ""
 
-#~ msgid "Export is in progress on another device."
-#~ msgstr ""
+msgid "Export is in progress on another device."
+msgstr ""
 
-#~ msgid "Export is failed."
-#~ msgstr ""
+msgid "Export is failed."
+msgstr ""
 
 # Import authors
-#~ msgid "Select"
-#~ msgstr ""
+msgid "Select"
+msgstr ""
 
-#~ msgid "Result"
-#~ msgstr ""
+msgid "Result"
+msgstr ""
 
-#~ msgid "Download"
-#~ msgstr ""
+msgid "Download"
+msgstr ""
 
-#~ msgid "No."
-#~ msgstr ""
+msgid "No."
+msgstr ""
 
-#~ msgid "WEKO ID"
-#~ msgstr ""
+msgid "WEKO ID"
+msgstr ""
 
-#~ msgid "full_name"
-#~ msgstr "Name"
+msgid "full_name"
+msgstr "Name"
 
-#~ msgid "Select File"
-#~ msgstr ""
+msgid "Select File"
+msgstr ""
 
-#~ msgid "Selected file name"
-#~ msgstr ""
+msgid "Selected file name"
+msgstr ""
 
-#~ msgid "Next"
-#~ msgstr ""
+msgid "Next"
+msgstr ""
 
-#~ msgid "Summary"
-#~ msgstr ""
+msgid "Summary"
+msgstr ""
 
-#~ msgid "Total"
-#~ msgstr ""
+msgid "Total"
+msgstr ""
 
-#~ msgid "New Creator"
-#~ msgstr ""
+msgid "New Creator"
+msgstr ""
 
-#~ msgid "Update Creator"
-#~ msgstr ""
+msgid "Update Creator"
+msgstr ""
 
-#~ msgid "Delete Creator"
-#~ msgstr ""
+msgid "Delete Creator"
+msgstr ""
 
-#~ msgid "Result Error"
-#~ msgstr ""
+msgid "Result Error"
+msgstr ""
 
-#~ msgid "Mail Address"
-#~ msgstr ""
+msgid "Mail Address"
+msgstr ""
 
-#~ msgid "Check Result"
-#~ msgstr ""
+msgid "Check Result"
+msgstr ""
 
-#~ msgid "Start Date"
-#~ msgstr ""
+msgid "Start Date"
+msgstr ""
 
-#~ msgid "End Date"
-#~ msgstr ""
+msgid "End Date"
+msgstr ""
 
-#~ msgid "Status"
-#~ msgstr ""
+msgid "Status"
+msgstr ""
 
-#~ msgid "To Do"
-#~ msgstr ""
+msgid "To Do"
+msgstr ""
 
-#~ msgid "Error"
-#~ msgstr ""
-
-
-#~ msgid "Failure"
-#~ msgstr ""
-
-#~ msgid "Pending"
-#~ msgstr ""
+msgid "Error"
+msgstr ""
 
 
-#~ msgid "Warning"
-#~ msgstr ""
+msgid "Failure"
+msgstr ""
 
-#~ msgid "Register"
-#~ msgstr ""
-
-#~ msgid "Update"
-#~ msgstr ""
-
-#~ msgid "Delete"
-#~ msgstr ""
-
-#~ msgid "Celery is not running."
-#~ msgstr ""
-
-#~ msgid "Import is in progress."
-#~ msgstr ""
-
-#~ msgid "Import is in progress on another device."
-#~ msgstr ""
-
-#~ msgid "Register Success"
-#~ msgstr ""
-
-#~ msgid "Update Success"
-#~ msgstr ""
-
-#~ msgid "Delete Success"
-#~ msgstr ""
-
-#~ msgid "Failed to import."
-#~ msgstr ""
-
-#~ msgid "Cannot read tsv file correctly."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The TSV file could not be read."
-#~ " Make sure the file format is "
-#~ "TSV and that the file is UTF-8 "
-#~ "encoded."
-#~ msgstr ""
-
-#~ msgid "There is duplicated data in the TSV file."
-#~ msgstr ""
-
-#~ msgid "The selected target table and the import file format are different."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The specified author has been deleted."
-#~ " Update author information with tsv "
-#~ "content, but author remains deleted as"
-#~ " it is."
-#~ msgstr ""
-
-#~ msgid "Force Change Mode"
-#~ msgstr ""
-
-#~ msgid "Disclaimer:"
-#~ msgstr ""
-
-#~ msgid "- When using this function, all metadata using author information is forcibly changed to match the author DB when updating."
-#~ msgstr ""
-
-#~ msgid "- If not used, only the author and affiliation identifiers are changed when updating."
-#~ msgstr ""
-
-#~ msgid "- Before starting this operation, you need fully understand the contents and metadata using AuthorDB at your institution."
-#~ msgstr ""
-
-#~ msgid "- Use this function on your own responsibility."
-#~ msgstr ""
-
-#~ msgid "- National Institute of Informatics (NII) does not take any responsibility for damages caused by using this function."
-#~ msgstr ""
-
-#~ msgid "I agree to the terms of use."
-#~ msgstr ""
+msgid "Pending"
+msgstr ""
 
 
-#~ msgid "Scheme is required item."
-#~ msgstr ""
+msgid "Warning"
+msgstr ""
 
-#~ msgid "Name is required item."
-#~ msgstr ""
+msgid "Register"
+msgstr ""
 
-#~ msgid "url is not URL format."
-#~ msgstr ""
+msgid "Update"
+msgstr ""
 
-#~ msgid "Specified identifier does not exist."
-#~ msgstr ""
+msgid "Delete"
+msgstr ""
 
-#~ msgid "The scheme WEKO cannot be used."
-#~ msgstr ""
+msgid "Celery is not running."
+msgstr ""
 
-#~ msgid "The specified scheme is used in the author ID."
-#~ msgstr ""
+msgid "Import is in progress."
+msgstr ""
 
-#~ msgid "WEKO ID is required item."
-#~ msgstr ""
+msgid "Import is in progress on another device."
+msgstr ""
 
-#~ msgid "WEKO ID is Half-width digits only"
-#~ msgstr ""
+msgid "Register Success"
+msgstr ""
 
-#~msgid "Specified Affiliation Identifier Scheme '{}' does not exist."
-#~msgstr ""
+msgid "Update Success"
+msgstr ""
 
-#~ msgid "Affiliation Period must be in the format:yyyy-MM-dd, blank '{}'"
-#~ msgstr ""
+msgid "Delete Success"
+msgstr ""
 
-#~ msgid "Period end must be after Period start."
-#~ msgstr ""
+msgid "Failed to import."
+msgstr ""
 
-#~ msgid "Specified WEKO ID already exist."
-#~ msgstr ""
+msgid "Cannot read tsv file correctly."
+msgstr ""
+
+msgid ""
+"The TSV file could not be read."
+" Make sure the file format is "
+"TSV and that the file is UTF-8 "
+"encoded."
+msgstr ""
+
+msgid "There is duplicated data in the TSV file."
+msgstr ""
+
+msgid "The selected target table and the import file format are different."
+msgstr ""
+
+msgid ""
+"The specified author has been deleted."
+" Update author information with tsv "
+"content, but author remains deleted as"
+" it is."
+msgstr ""
+
+msgid "Force Change Mode"
+msgstr ""
+
+msgid "Disclaimer:"
+msgstr ""
+
+msgid "- When using this function, all metadata using author information is forcibly changed to match the author DB when updating."
+msgstr ""
+
+msgid "- If not used, only the author identifiers are changed when updating."
+msgstr ""
+
+msgid "- Before starting this operation, you need fully understand the contents and metadata using AuthorDB at your institution."
+msgstr ""
+
+msgid "- Use this function on your own responsibility."
+msgstr ""
+
+msgid "- National Institute of Informatics (NII) does not take any responsibility for damages caused by using this function."
+msgstr ""
+
+msgid "I agree to the terms of use."
+msgstr ""
+
+
+msgid "Scheme is required item."
+msgstr ""
+
+msgid "Name is required item."
+msgstr ""
+
+msgid "url is not URL format."
+msgstr ""
+
+msgid "Specified identifier does not exist."
+msgstr ""
+
+msgid "The scheme WEKO cannot be used."
+msgstr ""
+
+msgid "The specified scheme is used in the author ID."
+msgstr ""
+
+msgid "WEKO ID is required item."
+msgstr ""
+
+msgid "WEKO ID is Half-width digits only"
+msgstr ""
+
+msgid "Specified Affiliation Identifier Scheme '{}' does not exist."
+msgstr ""
+
+msgid "Affiliation Period must be in the format:yyyy-MM-dd, blank '{}'"
+msgstr ""
+
+msgid "Period end must be after Period start."
+msgstr ""
+
+msgid "Specified WEKO ID already exist."
+msgstr ""
