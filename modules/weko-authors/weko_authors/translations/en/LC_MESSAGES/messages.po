@@ -97,6 +97,32 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
+#: weko_authors/views.py:63 weko_authors/views.py:112 weko_authors/views.py:159
+msgid "Header Error"
+msgstr ""
+
+#: weko_authors/views.py:74 weko_authors/views.py:123
+msgid "Please set WEKO ID."
+msgstr ""
+
+#: weko_authors/views.py:81 weko_authors/views.py:132
+msgid "Please set the WEKOID in the half digit."
+msgstr ""
+
+#: weko_authors/views.py:84 weko_authors/views.py:135
+msgid "The value is already in use as WEKO ID."
+msgstr ""
+
+#: weko_authors/views.py:93 weko_authors/views.py:140
+msgid ""
+"Please set the affiliation start date and end date in the format yyyy-MM-"
+"dd."
+msgstr ""
+
+#: weko_authors/views.py:93 weko_authors/views.py:140
+msgid "The end date must be after the start date."
+msgstr ""
+
 #: weko_authors/contrib/validation.py:106
 msgid "Specified Identifier Scheme '{}' does not exist."
 msgstr ""

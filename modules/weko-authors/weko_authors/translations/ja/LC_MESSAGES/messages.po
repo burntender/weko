@@ -97,6 +97,32 @@ msgstr "ヘッダエラー"
 msgid "Success"
 msgstr "成功"
 
+#: weko_authors/views.py:63 weko_authors/views.py:112 weko_authors/views.py:159
+msgid "Header Error"
+msgstr ""
+
+#: weko_authors/views.py:74 weko_authors/views.py:123
+msgid "Please set WEKO ID."
+msgstr "WEKOIDの値を設定してください。"
+
+#: weko_authors/views.py:81 weko_authors/views.py:132
+msgid "Please set the WEKOID in the half digit."
+msgstr "WEKO IDは半角数字のみです。"
+
+#: weko_authors/views.py:84 weko_authors/views.py:135
+msgid "The value is already in use as WEKO ID."
+msgstr "そのWEKO IDは既に使われています。"
+
+#: weko_authors/views.py:93 weko_authors/views.py:140
+msgid ""
+"Please set the affiliation start date and end date in the format yyyy-MM-"
+"dd."
+msgstr "所属開始日、または所属終了日が入力方式がyyyy-MM-ddに従っていません。"
+
+#: weko_authors/views.py:93 weko_authors/views.py:140
+msgid "The end date must be after the start date."
+msgstr "所属終了日は所属開始日より後の日にして下さい。"
+
 #: weko_authors/contrib/validation.py:106
 msgid "Specified Identifier Scheme '{}' does not exist."
 msgstr "指定された外部著者ID 識別子'{}'が存在していません。"

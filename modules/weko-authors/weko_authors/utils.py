@@ -300,17 +300,19 @@ def handle_exception(ex, attempt, retrys, interval, stop_point=0):
         stop_point(int): Stop point
         
     """
-    current_app.logger.error(ex)
+    current_app.logger.error(f"Exception type: {type(ex).__name__}")
+    current_app.logger.error(f"Exception message: {str(ex)}")
+    current_app.logger.error(f"Traceback: {traceback.format_exc()}")
     # 最後のリトライの場合は例外をraise
     if attempt == retrys - 1:
-        current_app.logger.info(f"Connection failed, Stop export.")
+        current_app.logger.info(f"Connection failed, Stop it.")
         if stop_point != 0:
             update_cache_data(
                 current_app.config["WEKO_AUTHORS_EXPORT_CACHE_STOP_POINT_KEY"],
                 stop_point,
                 current_app.config["WEKO_AUTHORS_CACHE_TTL"]
                 )
-        raise ex
+        raise Exception(" process failed after maximum retries") from ex
     current_app.logger.info(f"Connection failed, retrying in {interval} seconds...")
     sleep(interval)
     
@@ -333,6 +335,10 @@ def export_authors():
     # ある程度の処理をまとめてリトライ処理
         for attempt in range(retrys):
             try:
+                # 一時ファイルのパスを取得
+                temp_file_path=current_cache.get(\
+                    current_app.config["WEKO_AUTHORS_EXPORT_CACHE_TEMP_FILE_PATH_KEY"])
+                
                 # マッピングを取得
                 mappings = deepcopy(current_app.config["WEKO_AUTHORS_FILE_MAPPING"])
                 affiliation_mappings = deepcopy(current_app.config["WEKO_AUTHORS_FILE_MAPPING_FOR_AFFILIATION"])
@@ -349,9 +355,6 @@ def export_authors():
                 # 所属機関識別子の対応を取得
                 aff_schemes = WekoAuthors.get_affiliation_identifier_scheme_info()
                 
-                # 一時ファイルのパスを取得
-                temp_file_path=current_cache.get(\
-                    current_app.config["WEKO_AUTHORS_EXPORT_CACHE_TEMP_FILE_PATH_KEY"])
                 break
             except SQLAlchemyError as ex:
                 handle_exception(ex, attempt, retrys, interval)
@@ -410,7 +413,10 @@ def export_authors():
     except Exception as ex:
         db.session.rollback()
         if not current_cache.get(current_app.config["WEKO_AUTHORS_EXPORT_CACHE_STOP_POINT_KEY"]):
-            os.remove(temp_file_path)
+            try:
+                os.remove(temp_file_path)
+            except OSError as e:
+                current_app.logger.error(e)
         current_app.logger.error(ex)
         traceback.print_exc(file=stdout)
     current_cache.set(
