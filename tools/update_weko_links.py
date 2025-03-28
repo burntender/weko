@@ -7,7 +7,7 @@ workflow_activityのtemp_dataからweko_linkを作成し、workflow_activityを�
 
 import csv, json, psycopg2, sys, traceback
 from os import getenv
-
+from psycopg2 import OperationalError
 
 def get_connection(db_name):
     return psycopg2.connect(
@@ -51,7 +51,11 @@ def update_records_metadata(db_list):
                     update_logs.append((id, json_data))
                     print(f'Updated record id: {id}')
                     success += 1
-            except:
+            except OperationalError as e:
+                print(f'ERROR: {traceback.print_exc()}')
+                print("records_metadata id"+ret[0])
+                failed += 1
+            except Exception as e:
                 print(f'ERROR: {traceback.print_exc()}')
                 print("records_metadata id"+ret[0])
                 failed += 1
@@ -122,10 +126,15 @@ def update_workflow_activity(db_list):
                     update_logs.append((id, json_data))
                     print(f'Updated workflow id: {id}')
                     success += 1
-            except:
+            except OperationalError as e:
                 print(f'ERROR: {traceback.print_exc()}')
-                print("workflow_activity id"+ret[0])
+                print("records_metadata id"+ret[0])
                 failed += 1
+            except Exception as e:
+                print(f'ERROR: {traceback.print_exc()}')
+                print("records_metadata id"+ret[0])
+                failed += 1
+                
         print("workflow_activity_update_logs")
         print(db_name)
         print("total: "+str(total))

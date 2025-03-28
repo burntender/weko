@@ -180,6 +180,8 @@ def validate_affiliation_period_start(item, values=[]):
     for val in values:
         date = val["value"]
         if date:
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+                errors.append(err_msg_format.format(val['value']))
             try:
                 datetime.strptime(date, "%Y-%m-%d")
             except ValueError:
@@ -206,6 +208,8 @@ def validate_affiliation_period_end(item, values=[]):
     for val in values:
         period_end = val["value"]
         if period_end:
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", period_end):
+                errors.append(err_msg_format.format(val['value']))
             try:
                 datetime.strptime(period_end, "%Y-%m-%d")
             except ValueError:
