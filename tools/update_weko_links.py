@@ -19,127 +19,150 @@ def get_connection(db_name):
         connect_timeout=10
     )
     
-def update_records_metadata(db_list):
+def update_records_metadata(db_list, batch_size=1000):
     for db_name in db_list:
         update_logs = []
-        with get_connection(db_name) as conn, conn.cursor() as cur:
-            # records_metadataを更新する。
-            cur.execute("""
-                SELECT id, json 
-                FROM records_metadata 
-                WHERE NOT (json::jsonb ? 'weko_link');
-            """)
-            results = cur.fetchall()
-        total = len(results)
-        success = 0
-        failed = 0
-        for ret in results:
-            try:
-                id = ret[0]
-                json_data = ret[1]
-                # author_linkからweko_linkを作成
-                if 'author_link' in json_data:
-                    author_link = json_data['author_link']
-                    weko_link = {str(item): str(item) for item in author_link}
-                    json_data['weko_link'] = weko_link
-                    # レコードを更新
-                    cur.execute("""
-                        UPDATE records_metadata
-                        SET json = %s
-                        WHERE id = %s;
-                    """, (json.dumps(json_data), id))
-                    update_logs.append((id, json_data))
-                    print(f'Updated record id: {id}')
-                    success += 1
-            except OperationalError as e:
-                print(f'ERROR: {traceback.print_exc()}')
-                print("records_metadata id"+ret[0])
-                failed += 1
-            except Exception as e:
-                print(f'ERROR: {traceback.print_exc()}')
-                print("records_metadata id"+ret[0])
-                failed += 1
-        print("records_metadata_update_logs")
-        print(db_name)
-        print("total: "+str(total))
-        print("success: "+str(success))
-        print("failed: "+str(failed))
-        
-def update_workflow_activity(db_list):
-    for db_name in db_list:
-        update_logs = []
-        with get_connection(db_name) as conn, conn.cursor() as cur:
-            # workflow_activityからデータを取得。
-            cur.execute("""
-                SELECT id, item_id ,temp_data 
-                FROM workflow_activity 
-                WHERE temp_data IS NOT NULL;
-            """)
-            results = cur.fetchall()
-        total = len(results)
-        success = 0
-        failed = 0
-        for ret in results:
-            try:
-                id = ret[0]
-                item_id = ret[1]
-                json_str = ret[2]
-                # 編集を開始したが、まだ一度もセーブしていないワークフローについての処理
-                # item_idが存在する場合は、item_metadataからmetainfoを取得し、weko_linkを作成する
-                if json_str == {} and item_id is not None:
-                    with get_connection(db_name) as conn, conn.cursor() as cur:
-                        print(item_id)
-                        cur.execute("""
-                            SELECT id, json
-                            FROM item_metadata 
-                            WHERE id = %s;
-                        """, (item_id,))
-                        item_metadata = cur.fetchone()
-                        json_data = {}
-                        json_data["metainfo"] = item_metadata[1]
-                        weko_link = get_weko_link(json_data)
-                        json_data['weko_link'] = weko_link
-                        # レコードを更新
-                        cur.execute("""
-                            UPDATE workflow_activity
-                            SET temp_data = to_jsonb(CAST(%s AS text))
-                            WHERE id = %s;
-                        """, (json.dumps(json_data), id))
-                        
-                        print(f'Updated workflow id: {id}')
-                        success += 1
-                # 編集を開始して、セーブしてあるtemp_dataが存在するワークフローについての処理
-                elif isinstance(json_str, str):
-                    json_data = json.loads(json_str)
-                    # weko_linkが存在する場合はスキップ
-                    if json_data.get(weko_link):
-                        continue
-                    weko_link = get_weko_link(json_data)
-                    json_data['weko_link'] = weko_link
-                    # レコードを更新
-                    with get_connection(db_name) as conn, conn.cursor() as cur:
-                        cur.execute("""
-                            UPDATE workflow_activity
-                            SET temp_data = to_jsonb(CAST(%s AS text))
-                            WHERE id = %s;
-                        """, (json.dumps(json_data, ensure_ascii=False), id))
-                    update_logs.append((id, json_data))
-                    print(f'Updated workflow id: {id}')
-                    success += 1
-            except OperationalError as e:
-                print(f'ERROR: {traceback.print_exc()}')
-                print("records_metadata id"+ret[0])
-                failed += 1
-            except Exception as e:
-                print(f'ERROR: {traceback.print_exc()}')
-                print("records_metadata id"+ret[0])
-                failed += 1
+        with get_connection(db_name) as conn:
+            with conn.cursor() as cur:
+                # レコード数を取得
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM records_metadata;
+                """)
+                total_records = cur.fetchone()[0]
+                print(f"Total records to process in {db_name}: {total_records}")
                 
-        print("workflow_activity_update_logs")
-        print(db_name)
-        print("total: "+str(total))
-        print("success: "+str(success))
-        print("failed: "+str(failed))
+                offset = 0
+                total = total_records
+                success = 0
+                failed = 0
+                
+            while offset < total_records:
+                with conn.cursor() as cur:
+                    # バッチごとにデータを取得
+                    cur.execute(f"""
+                        SELECT id, json 
+                        FROM records_metadata 
+                        LIMIT {batch_size} OFFSET {offset};
+                    """)
+                    results = cur.fetchall()
+                    offset += batch_size
+                    
+                    for ret in results:
+                        try:
+                            id = ret[0]
+                            json_data = ret[1]
+                            # weko_linkがないレコードに関してauthor_linkからweko_linkを作成
+                            if not 'weko_link' in json_data and 'author_link' in json_data:
+                                author_link = json_data['author_link']
+                                weko_link = {str(item): str(item) for item in author_link}
+                                json_data['weko_link'] = weko_link
+                                # レコードを更新
+                                cur.execute("""
+                                    UPDATE records_metadata
+                                    SET json = %s
+                                    WHERE id = %s;
+                                """, (json.dumps(json_data), id))
+                                update_logs.append((id, json_data))
+                                print(f'Updated record id: {id}')
+                                success += 1
+                        except Exception as e:
+                            print(f'ERROR: {traceback.print_exc()}')
+                            print("records_metadata id"+ret[0])
+                            failed += 1
+            # 最後に結果を表示
+            print("records_metadata_update_logs")
+            print(db_name)
+            print("total: "+str(total))
+            print("success: "+str(success))
+            print("failed: "+str(failed))
+
+def update_workflow_activity(db_list, batch_size=1000):
+    for db_name in db_list:
+        update_logs = []
+        with get_connection(db_name) as conn:
+            with conn.cursor() as cur:
+                # レコード数を取得
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM workflow_activity 
+                    WHERE temp_data IS NOT NULL;
+                """)
+                total_records = cur.fetchone()[0]
+                print(f"Total workflow_activity records to process in {db_name}: {total_records}")
+                
+                offset = 0
+                total = total_records
+                success = 0
+                failed = 0
+                
+            while offset < total_records:
+                # バッチごとにデータを取得
+                with conn.cursor() as cur:
+                    cur.execute(f"""
+                        SELECT id, item_id, temp_data 
+                        FROM workflow_activity 
+                        WHERE temp_data IS NOT NULL
+                        LIMIT {batch_size} OFFSET {offset};
+                    """)
+                    results = cur.fetchall()
+                    offset += batch_size
+                    for ret in results:
+                        try:
+                            id = ret[0]
+                            item_id = ret[1]
+                            json_str = ret[2]
+                            # 編集を開始したが、まだ一度もセーブしていないワークフローについての処理
+                            if json_str == {} and item_id is not None:
+                                print(item_id)
+                                cur.execute("""
+                                    SELECT id, json
+                                    FROM item_metadata 
+                                    WHERE id = %s;
+                                """, (item_id,))
+                                item_metadata = cur.fetchone()
+                                json_data = {}
+                                json_data["metainfo"] = item_metadata[1]
+                                weko_link = get_weko_link(json_data)
+                                json_data['weko_link'] = weko_link
+                                # レコードを更新
+                                cur.execute("""
+                                    UPDATE workflow_activity
+                                    SET temp_data = to_jsonb(CAST(%s AS text))
+                                    WHERE id = %s;
+                                """, (json.dumps(json_data), id))
+                                print(f'Updated workflow id: {id}')
+                                success += 1
+                            # 編集を開始して、セーブしてあるtemp_dataが存在するワークフローについての処理
+                            elif isinstance(json_str, str):
+                                json_data = json.loads(json_str)
+                                # weko_linkが存在する場合はスキップ
+                                if json_data.get("weko_link"):
+                                    continue
+                                weko_link = get_weko_link(json_data)
+                                json_data['weko_link'] = weko_link
+                                cur.execute("""
+                                    UPDATE workflow_activity
+                                    SET temp_data = to_jsonb(CAST(%s AS text))
+                                    WHERE id = %s;
+                                """, (json.dumps(json_data, ensure_ascii=False), id))
+                                update_logs.append((id, json_data))
+                                print(f'Updated workflow id: {id}')
+                                success += 1
+                        except OperationalError as e:
+                            print(f'ERROR: {traceback.print_exc()}')
+                            print(f"Failed to update workflow id: {ret[0]}")
+                            failed += 1
+                        except Exception as e:
+                            print(f'ERROR: {traceback.print_exc()}')
+                            print(f"Failed to update workflow id: {ret[0]}")
+                            failed += 1
+            # 最後に結果を表示
+            print("workflow_activity_update_logs")
+            print(db_name)
+            print("total: "+str(total))
+            print("success: "+str(success))
+            print("failed: "+str(failed))
 
 def get_weko_link(metadata):
     """
